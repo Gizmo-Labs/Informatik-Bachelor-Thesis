@@ -1,3 +1,9 @@
+#### Bachelor-Thesis mit dem Thema
+
+"Elektromyografie mit Tiny Machine-Learning zur benutzerunabhängigen Handgestenerkennung"
+
+****
+
 Nützliche Informationen zum ESP32S3
 
 ****

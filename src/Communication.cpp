@@ -561,12 +561,17 @@ void sendStatusData()
 {
   JsonDocument status(&allocator);
   String message;
-
+ 
+  // Anzahl der Zeilen mit jeweils 64 Einzelwerten
   status[PREFIX_DATA + "_Gesture_DataPackets"] = data_collecting_t->iDatapoints[data_collecting_t->iLabel];
-  status[PREFIX_DATA + "_Gesture_DataPoints"] = data_collecting_t->iDatapoints[data_collecting_t->iLabel] * 8;
+  
+  // Anzahl der Einzelwerte insgesamt --> Anzahl der Zeilen x 64
+  status[PREFIX_DATA + "_Gesture_DataPoints"] = data_collecting_t->iDatapoints[data_collecting_t->iLabel] * 64;
+  
+  // 
   status[PREFIX_DATA + "_Total_DataPackets"] = data_collecting_t->iDatapoints[data_collecting_t->iLabel] * data_collecting_t->iRepetitions_done;
-  status[PREFIX_DATA + "_Total_DataPoints"] = data_collecting_t->iDatapoints[data_collecting_t->iLabel] * data_collecting_t->iRepetitions_done * 8;
-  status[PREFIX_DATA + "_TotalSize"] = (data_collecting_t->iDatapoints[data_collecting_t->iLabel] * 8) / 1024;
+  status[PREFIX_DATA + "_Total_DataPoints"] = data_collecting_t->iDatapoints[data_collecting_t->iLabel] * data_collecting_t->iRepetitions_done * 64;
+  status[PREFIX_DATA + "_TotalSize"] = (data_collecting_t->iDatapoints[data_collecting_t->iLabel] * 64 * 8) / 1024;
   status[PREFIX_DATA + "_Start_Collecting"] = data_collecting_t->flag_start_collecting;
   serializeJsonPretty(status, message);
   publishMqtt(Data_Topic, message);

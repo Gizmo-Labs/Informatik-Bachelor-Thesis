@@ -101,30 +101,33 @@ void write_emg_sample(int8_t *sample, size_t len)
     // Messintervall ausführen
     case BEGIN:
 
-    if(count_samples < 64)
-    {    
-      for (int i = 0; i < len; i++)
+      // Immer 64 Samples abwarten
+      if (count_samples < 64)
       {
-        Serial.print(sample[i]);
-        // if (i < len - 1)
-        Serial.print(",");
-        count_samples++;
+        for (int i = 0; i < len; i++)
+        {
+          data_collecting_t->iBluetoothData[count_samples] = sample[i];
+          count_samples++;
+        }
       }
-    }
-    else
-    {
-      Serial.println();
-      data_collecting_t->iDatapoints[data_collecting_t->iLabel]++;
-      count_samples = 0;
-    }
+
+      // Dann erst seriell senden
+      if (count_samples >= 64)
+      {
+        for (int j = 0; j < 64; j++)
+        {
+          Serial.print(data_collecting_t->iBluetoothData[j]);
+          // Letzter Datensatz benötigt kein Komma mehr
+          if (j < 63)
+            Serial.print(",");
+        }
+        Serial.println();
+        data_collecting_t->iDatapoints[data_collecting_t->iLabel]++;
+        count_samples = 0;
+      }
       break;
     // Messintervall beendet --> Ampel aus
     case END:
-      Serial.print("Label: ");
-      Serial.print(data_collecting_t->iLabel);
-      Serial.print(",");
-      Serial.println();
-
       data_collecting_t->flag_traffic_light = false;
       data_collecting_t->flag_green_light = false;
       data_collecting_t->iRepetitions_done++;
@@ -147,7 +150,7 @@ void write_emg_sample(int8_t *sample, size_t len)
 ********************************************************/
 void emgCallback(BLERemoteCharacteristic *pBLERemoteCharacteristic, uint8_t *pData, size_t length, bool isNotify)
 {
-  myohw_emg_data_t *emg_data = (myohw_emg_data_t *)pData;    
-    write_emg_sample(emg_data->sample1, myohw_num_emg_sensors);
-    write_emg_sample(emg_data->sample2, myohw_num_emg_sensors);  
+  myohw_emg_data_t *emg_data = (myohw_emg_data_t *)pData;
+  write_emg_sample(emg_data->sample1, myohw_num_emg_sensors);
+  write_emg_sample(emg_data->sample2, myohw_num_emg_sensors);
 }

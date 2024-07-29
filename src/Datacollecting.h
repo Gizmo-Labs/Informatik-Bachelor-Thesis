@@ -55,7 +55,7 @@ typedef struct
   uint8_t iRepetitions_done;
   uint8_t iSamples;
   uint32_t iDatapoints[GESTURES];
-  //int8_t iRawData[16][9];
+  int8_t iBluetoothData[64];  
 } TINYML_DATA;
 
 

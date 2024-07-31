@@ -78,9 +78,7 @@ void setup()
     Serial.println("Dateisystem erfolgreich erstellt!");
   }
 
-  readFile(FFat, "/Labels.csv");
-  delay(500);
-  readFile(FFat, "/Features.csv");
+  
 
 }
 

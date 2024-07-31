@@ -7,10 +7,8 @@
 /********************************************************
   Funktions-Prototypen Data-Collecting
 ********************************************************/
-void print_emg_sample(int8_t *sample, size_t len);
 void write_emg_sample(int8_t *sample, size_t len);
 void emgCallback(BLERemoteCharacteristic *pBLERemoteCharacteristic, uint8_t *pData, size_t length, bool isNotify);
-void batteryCallback(BLERemoteCharacteristic *pBLERemoteCharacteristic, uint8_t *pData, size_t length, bool isNotify);
 void setupISR();
 
 /********************************************************

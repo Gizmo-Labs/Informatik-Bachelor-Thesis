@@ -162,3 +162,12 @@ void testFileIO(fs::FS &fs, const char *path)
         Serial.println("- failed to open file for reading");
     }
 }
+
+void readLabels()
+{
+    if(cp.readFile(FFat, "/Labels.csv"))
+    {
+        
+    }
+  
+}

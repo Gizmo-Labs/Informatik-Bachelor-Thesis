@@ -10,9 +10,15 @@
 ********************************************************/
 armband myo;
 
+
+/********************************************************
+  Extern deklarierte Instanzen
+********************************************************/
 extern u_int8_t ICounter1;
 extern MYO_DATA *myo_control_t;
 extern TINYML_DATA *data_collecting_t;
+extern TARGET_DATA *target_data_t;
+
 
 /********************************************************
   Definition Globale Variablen
@@ -56,6 +62,7 @@ void setup()
 
   myo_control_t = new MYO_DATA();
   data_collecting_t = new TINYML_DATA();
+  target_data_t = new TARGET_DATA();
 
   /********************************************************
     RGB-LED initialisieren
@@ -78,7 +85,7 @@ void setup()
     Serial.println("Dateisystem erfolgreich erstellt!");
   }
 
-  
+  readLabels();
 
 }
 

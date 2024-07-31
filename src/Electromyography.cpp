@@ -67,6 +67,21 @@ void setup()
   ********************************************************/
   initMqtt();
   sendStatusMyo();
+
+  if (!FFat.begin(FORMAT_FFAT_IF_FAILED, "/ffat", 10, "ffat"))
+  {
+    Serial.println("Dateisystem FFat konnte nicht erstellt werden!");
+    return;
+  }
+  else
+  {
+    Serial.println("Dateisystem erfolgreich erstellt!");
+  }
+
+  readFile(FFat, "/Labels.csv");
+  delay(500);
+  readFile(FFat, "/Features.csv");
+
 }
 
 void loop()

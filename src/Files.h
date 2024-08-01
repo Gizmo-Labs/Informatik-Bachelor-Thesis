@@ -21,7 +21,7 @@ void readInput();
   Globale Konstanten File-Handling  
 ********************************************************/
 #define FORMAT_FFAT_IF_FAILED false
-#define DEBUG_FILE_HANDLING true
+#define DEBUG_FILE_HANDLING false
 
 
 /********************************************************

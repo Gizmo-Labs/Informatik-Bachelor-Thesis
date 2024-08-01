@@ -86,8 +86,10 @@ void setup()
     Serial.println("Dateisystem erfolgreich erstellt!");
   }
 
-  readLabels();
-  readInput();
+  //readLabels();
+  //readInput();
+
+  buildModel();
 
 }
 

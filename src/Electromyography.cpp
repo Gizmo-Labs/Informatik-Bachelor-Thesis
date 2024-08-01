@@ -23,6 +23,8 @@ extern INPUT_DATA *input_data_t;
 /********************************************************
   Definition Globale Variablen
 ********************************************************/
+SET_LOOP_TASK_STACK_SIZE( 16*1024 ); // 16KB
+
 
 void initMyo()
 {
@@ -53,7 +55,7 @@ void setup()
   Serial.begin(115200);
   Serial.println(ARDUINO_BOARD);
 
-  WiFiStart();
+  //WiFiStart();
 
   /********************************************************
     Interrupt-Service-Routinen starten
@@ -85,11 +87,12 @@ void setup()
   {
     Serial.println("Dateisystem erfolgreich erstellt!");
   }
-
+  
   //readLabels();
   //readInput();
 
   buildModel();
+  //runTraining();
 
 }
 

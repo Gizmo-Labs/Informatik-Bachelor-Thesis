@@ -210,23 +210,23 @@ bool rowParserFinished()
 ********************************************************/
 void readLabels()
 {
-    CSV_Parser cp(/*format*/ "dddd", /*has_header*/ false);
+    CSV_Parser cp(/*format*/ "ffff", /*has_header*/ false);
 
-    file = FFat.open("/Labels.csv", "r");
+    file = FFat.open("/y_train.csv", "r");
 
-    uint16_t *label_0 = (uint16_t *)cp[0];
-    uint16_t *label_1 = (uint16_t *)cp[1];
-    uint16_t *label_2 = (uint16_t *)cp[2];
-    uint16_t *label_3 = (uint16_t *)cp[3];
+    float *label_0 = (float *)cp[0];
+    float *label_1 = (float *)cp[1];
+    float *label_2 = (float *)cp[2];
+    float *label_3 = (float *)cp[3];
 
     int row_index = 0;
     uint32_t start = millis();
     while (cp.parseRow())
     {
-        target_data_t->iTarget_Label[row_index][0] = label_0[0];
-        target_data_t->iTarget_Label[row_index][1] = label_1[0];
-        target_data_t->iTarget_Label[row_index][2] = label_2[0];
-        target_data_t->iTarget_Label[row_index][3] = label_3[0];
+        target_data_t->fTarget_Label[row_index][0] = label_0[0];
+        target_data_t->fTarget_Label[row_index][1] = label_1[0];
+        target_data_t->fTarget_Label[row_index][2] = label_2[0];
+        target_data_t->fTarget_Label[row_index][3] = label_3[0];
 
         row_index++;
     }
@@ -247,7 +247,7 @@ void readLabels()
     {
         for (int j = 0; j < 20; j++)
         {
-            Serial.println("Reihe : " + String(j + 1) + " | " + String(target_data_t->iTarget_Label[j][0]) + " | " + String(target_data_t->iTarget_Label[j][1]) + " | " + String(target_data_t->iTarget_Label[j][2]) + " | " + String(target_data_t->iTarget_Label[j][3]));
+            Serial.println("Reihe : " + String(j + 1) + " | " + String(target_data_t->fTarget_Label[j][0]) + " | " + String(target_data_t->fTarget_Label[j][1]) + " | " + String(target_data_t->fTarget_Label[j][2]) + " | " + String(target_data_t->fTarget_Label[j][3]));
         }
     }
 }
@@ -260,7 +260,7 @@ void readInput()
 {
     CSV_Parser cp(/*format*/ "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff", /*has_header*/ false);
 
-    file = FFat.open("/Features.csv", "r");
+    file = FFat.open("/X_train.csv", "r");
 
     float *signal_0 = (float *)cp[0];
     float *signal_1 = (float *)cp[1];

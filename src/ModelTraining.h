@@ -3,19 +3,23 @@
   Funktions-Prototypen WiFi
 ********************************************************/
 void buildModel();
+void runTraining();
 
 
 /********************************************************
   Globale Konstanten Training-Daten
 ********************************************************/
-#define ROWS_OF_DATA 6064
+#define ROWS_OF_DATA 1000
 #define NUM_OF_CLASSES 4
 #define FEATURES 64
 #define PRINT_INTERVAL 10
 
+#define BATCH_SIZE 2
+#define EPOCHS 2
+
 
 #define DEBUG_MODEL_TRAINING false
-#define DEBUG_MODEL_BUILD false
+#define DEBUG_MODEL_BUILD true
 
 
 /********************************************************
@@ -23,7 +27,7 @@ void buildModel();
 ********************************************************/
 typedef struct
 {
-  uint16_t iTarget_Label[ROWS_OF_DATA][NUM_OF_CLASSES];
+  float fTarget_Label[ROWS_OF_DATA][NUM_OF_CLASSES];
 } TARGET_DATA;
 
 

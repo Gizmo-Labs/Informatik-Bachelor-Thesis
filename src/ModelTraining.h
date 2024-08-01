@@ -15,7 +15,7 @@ void buildModel();
 
 
 #define DEBUG_MODEL_TRAINING false
-#define DEBUG_MODEL_BUILD true
+#define DEBUG_MODEL_BUILD false
 
 
 /********************************************************

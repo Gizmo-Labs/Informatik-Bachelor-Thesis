@@ -233,7 +233,7 @@ void readLabels()
 
     uint32_t end = millis() - start;
 
-    if (DEBUG_FILE_HANDLING)
+    if (DEBUG_LABEL_FILE_HANDLING)
     {
         Serial.println("Parsed Rows : " + String(row_index));
         Serial.printf(" Took %lu ms\r\n", end);
@@ -243,11 +243,11 @@ void readLabels()
 
     delay(2000);
 
-    if (DEBUG_FILE_HANDLING)
+    if (DEBUG_LABEL_FILE_HANDLING)
     {
-        for (int j = 0; j < row_index; j++)
+        for (int j = 0; j < 20; j++)
         {
-            //Serial.println("Reihe : " + String(j + 1) + " | " + String(target_data_t->iTarget_Label[j][0]) + " | " + String(target_data_t->iTarget_Label[j][1]) + " | " + String(target_data_t->iTarget_Label[j][2]) + " | " + String(target_data_t->iTarget_Label[j][3]));
+            Serial.println("Reihe : " + String(j + 1) + " | " + String(target_data_t->iTarget_Label[j][0]) + " | " + String(target_data_t->iTarget_Label[j][1]) + " | " + String(target_data_t->iTarget_Label[j][2]) + " | " + String(target_data_t->iTarget_Label[j][3]));
         }
     }
 }
@@ -404,7 +404,7 @@ void readInput()
 
     uint32_t end = millis() - start;
 
-    if (DEBUG_FILE_HANDLING)
+    if (DEBUG_FEATURE_FILE_HANDLING)
     {
         Serial.println("Parsed Rows : " + String(row_index));
         Serial.printf(" Took %lu ms\r\n", end);
@@ -414,7 +414,7 @@ void readInput()
 
     delay(2000);
 
-    if (DEBUG_FILE_HANDLING)
+    if (DEBUG_FEATURE_FILE_HANDLING)
     {
         for (int j = 0; j < 20; j++)
         {

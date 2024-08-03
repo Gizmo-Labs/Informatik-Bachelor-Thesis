@@ -9,6 +9,5 @@
 #include "Datacollecting.h"
 #include "Peripherals.h"
 #include "Electromyography.h"
-#include "ModelTraining.h"
 #include "ModelEvaluation.h"
 

@@ -26,7 +26,6 @@ extern INPUT_DATA *input_data_t;
 ********************************************************/
 extern Eloquent::TF::Sequential<TF_NUM_OPS, ARENA_SIZE> tf;
 
-
 void initMyo()
 {
   if (DEBUG_ELECTROMYOGRAPHY)
@@ -47,7 +46,6 @@ void initMyo()
   myo_control_t->flag_connect_bluetooth = false;
   myo_control_t->flag_myo_sleepmode_external = false;
 }
-
 
 void setup()
 {
@@ -94,37 +92,12 @@ void setup()
   readLabels();
   readInput();
 
-  // uint8_t error;
-
-  // error = buildModel();
-
-  // if (error == 1)
-  //{
-  // Serial.println("Modell konnte nicht erzeugt werden!");
-  // return;
-  //}
-
-  // uint32_t start = millis();
-
-  // for (uint8_t i = 0; i < 200; i++)
-  // {
-  //   // runInferenz(input_data_t->fInput_Data[i], output_data_t->fOutput_Data[i]);
-  // }
-
-  // uint32_t end = millis() - start;
-
-  // // Serial.printf(" Zeit fuer Inferenz : %lu ms\r\n", end);
-  // //for (uint8_t k = 0; k < 10; k++)
-  // //{
-  // runTraining(*input_data_t->fInput_Data, *target_data_t->fTarget_Label);
-  // //}
-
   while (!tf.begin(FCNN).isOk())
     Serial.println(tf.exception.toString());
+
   delay(1000);
 
   runConfusionMatrix();
-  
 }
 
 void loop()

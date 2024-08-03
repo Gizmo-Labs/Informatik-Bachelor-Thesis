@@ -9,42 +9,17 @@
 Eloquent::TF::Sequential<TF_NUM_OPS, ARENA_SIZE> tf;
 
 /********************************************************
-  Extern deklarierte Instanzen
+  Array für Training-Labels auf PSRAM allokieren
 ********************************************************/
-extern TARGET_DATA *target_data_t;
-extern INPUT_DATA *input_data_t;
+TARGET_DATA *target_data_t = (TARGET_DATA *)heap_caps_malloc(sizeof(TARGET_DATA), MALLOC_CAP_SPIRAM);
+OUTPUT_DATA *output_data_t = (OUTPUT_DATA *)heap_caps_malloc(sizeof(OUTPUT_DATA), MALLOC_CAP_SPIRAM);
 
-void runInference()
-{
-    int i = 0;
-    int A[4];
 
-    for (i = 0; i < 200; i++)
-    {
-        if (!tf.predict(input_data_t->fInput_Data[i]).isOk())
-        {
-            Serial.println(tf.exception.toString());
-            return;
-        }
+/********************************************************
+  Array für Input-Daten auf PSRAM allokieren
+********************************************************/
+INPUT_DATA *input_data_t = (INPUT_DATA *)heap_caps_malloc(sizeof(INPUT_DATA), MALLOC_CAP_SPIRAM);
 
-        for (int j = 0; j < 4; j++)
-        {
-            A[j] = target_data_t->iTarget_Label[i][j];
-        }
-
-        const int N = 4;
-        int index = std::distance(A, std::max_element(A, A + N));
-
-        Serial.print("Erwartet wurde die Klasse " + String(index) + ", Vorhergesagt wurde die Klasse ");
-        Serial.println(tf.classification);
-
-        Serial.print("Das hat gedauert ");
-        Serial.print(tf.benchmark.microseconds());
-        Serial.println("us fuer eine Vorhersage");
-
-        delay(200);
-    }
-}
 
 /********************************************************
     Ausgabe der Konfusions-Matrix
@@ -75,7 +50,7 @@ void runConfusionMatrix()
     int False_Positives_Class_4 = 0;
     int False_Negatives_Class_4 = 0;
 
-        for (i = 0; i < 200; i++)
+    for (i = 0; i < 200; i++)
     {
         // Checke ob Vorhersage korrekt ausgeführt wurde
         if (!tf.predict(input_data_t->fInput_Data[i]).isOk())
@@ -229,37 +204,40 @@ void runConfusionMatrix()
             False_Negatives_Class_4 += 1;
         }
 
-        Serial.print("Das hat gedauert --> ");
-        Serial.print(tf.benchmark.microseconds());
-        Serial.println(" µs fuer eine Vorhersage");
+        if (DEBUG_EVALUATION)
+        {
+            Serial.print("Das hat gedauert --> ");
+            Serial.print(tf.benchmark.microseconds() / 1000);
+            Serial.println(" ms fuer eine Vorhersage");
+        }
     }
 
     Serial.println();
-    Serial.println("True Positives für Geste 1 : " + String(True_Positives_Class_1));
-    Serial.println("False Positives für Geste 1 : " + String(False_Positives_Class_1));
-    Serial.println("True Negatives für Geste 1 : " + String(True_Negatives_Class_1));
-    Serial.println("False Negatives für Geste 1 : " + String(False_Negatives_Class_1));
+    Serial.println("True Positives von Geste 1 : " + String(True_Positives_Class_1));
+    Serial.println("False Positives von Geste 1 : " + String(False_Positives_Class_1));
+    Serial.println("True Negatives von Geste 1 : " + String(True_Negatives_Class_1));
+    Serial.println("False Negatives von Geste 1 : " + String(False_Negatives_Class_1));
     Serial.println();
     Serial.println("-------------------------------------------------------------");
     Serial.println();
-    Serial.println("True Positives für Geste 2 : " + String(True_Positives_Class_2));
-    Serial.println("False Positives für Geste 2 : " + String(False_Positives_Class_2));
-    Serial.println("True Negatives für Geste 2 : " + String(True_Negatives_Class_2));
-    Serial.println("False Negatives für Geste 2 : " + String(False_Negatives_Class_2));
+    Serial.println("True Positives von Geste 2 : " + String(True_Positives_Class_2));
+    Serial.println("False Positives von Geste 2 : " + String(False_Positives_Class_2));
+    Serial.println("True Negatives von Geste 2 : " + String(True_Negatives_Class_2));
+    Serial.println("False Negatives von Geste 2 : " + String(False_Negatives_Class_2));
     Serial.println();
     Serial.println("-------------------------------------------------------------");
     Serial.println();
-    Serial.println("True Positives für Geste 3 : " + String(True_Positives_Class_3));
-    Serial.println("False Positives für Geste 3 : " + String(False_Positives_Class_3));
-    Serial.println("True Negatives für Geste 3 : " + String(True_Negatives_Class_3));
-    Serial.println("False Negatives für Geste 3 : " + String(False_Negatives_Class_3));
+    Serial.println("True Positives von Geste 3 : " + String(True_Positives_Class_3));
+    Serial.println("False Positives von Geste 3 : " + String(False_Positives_Class_3));
+    Serial.println("True Negatives von Geste 3 : " + String(True_Negatives_Class_3));
+    Serial.println("False Negatives von Geste 3 : " + String(False_Negatives_Class_3));
     Serial.println();
     Serial.println("-------------------------------------------------------------");
     Serial.println();
-    Serial.println("True Positives für Geste 4 : " + String(True_Positives_Class_4));
-    Serial.println("False Positives für Geste 4 : " + String(False_Positives_Class_4));
-    Serial.println("True Negatives für Geste 4 : " + String(True_Negatives_Class_4));
-    Serial.println("False Negatives für Geste 4 : " + String(False_Negatives_Class_4));
+    Serial.println("True Positives von Geste 4 : " + String(True_Positives_Class_4));
+    Serial.println("False Positives von Geste 4 : " + String(False_Positives_Class_4));
+    Serial.println("True Negatives von Geste 4 : " + String(True_Negatives_Class_4));
+    Serial.println("False Negatives von Geste 4 : " + String(False_Negatives_Class_4));
     Serial.println();
     Serial.println("-------------------------------------------------------------");
     Serial.println();
@@ -270,13 +248,12 @@ void runConfusionMatrix()
     float Precision_1 = ((True_Positives_Class_1 / 1.0f) / (True_Positives_Class_1 + False_Positives_Class_1 / 1.0f));
     float Precision_2 = ((True_Positives_Class_2 / 1.0f) / (True_Positives_Class_2 + False_Positives_Class_2 / 1.0f));
     float Precision_3 = ((True_Positives_Class_3 / 1.0f) / (True_Positives_Class_3 + False_Positives_Class_3 / 1.0f));
-    float Precision_4 = ((True_Positives_Class_4 / 1.0f) / (True_Positives_Class_4 + False_Positives_Class_4 / 1.0f)); 
+    float Precision_4 = ((True_Positives_Class_4 / 1.0f) / (True_Positives_Class_4 + False_Positives_Class_4 / 1.0f));
 
     float Recall_1 = ((True_Positives_Class_1 / 1.0f) / (True_Positives_Class_1 + False_Negatives_Class_1 / 1.0f));
-    float Recall_2 = ((True_Positives_Class_2/ 1.0f) / (True_Positives_Class_2 + False_Negatives_Class_2 / 1.0f));
+    float Recall_2 = ((True_Positives_Class_2 / 1.0f) / (True_Positives_Class_2 + False_Negatives_Class_2 / 1.0f));
     float Recall_3 = ((True_Positives_Class_3 / 1.0f) / (True_Positives_Class_3 + False_Negatives_Class_3 / 1.0f));
     float Recall_4 = ((True_Positives_Class_4 / 1.0f) / (True_Positives_Class_4 + False_Negatives_Class_4 / 1.0f));
-    
 
     float Prec_Oben = (True_Positives_Class_1 + True_Positives_Class_2 + True_Positives_Class_3 + True_Positives_Class_4) / 1.0f;
     float Prec_Unten = (True_Positives_Class_1 + False_Positives_Class_1 + True_Positives_Class_2 + False_Positives_Class_2 + True_Positives_Class_3 + False_Positives_Class_3 + True_Positives_Class_4 + False_Positives_Class_4) / 1.0f;
@@ -288,14 +265,14 @@ void runConfusionMatrix()
     float Macro_Precision = (Precision_1 + Precision_2 + Precision_3 + Precision_4 / 1.0f) / 4;
     float Macro_Recall = (Recall_1 + Recall_2 + Recall_3 + Recall_4 / 1.0f) / 4;
 
-    float f1_score_1 = 2 * ((Precision_1*Recall_1) / (Precision_1 + Recall_1));
-    float f1_score_2 = 2 * ((Precision_2*Recall_2) / (Precision_2 + Recall_2));
-    float f1_score_3 = 2 * ((Precision_3*Recall_3) / (Precision_3 + Recall_3));
-    float f1_score_4 = 2 * ((Precision_4*Recall_4) / (Precision_4 + Recall_4));
+    float f1_score_1 = 2 * ((Precision_1 * Recall_1) / (Precision_1 + Recall_1));
+    float f1_score_2 = 2 * ((Precision_2 * Recall_2) / (Precision_2 + Recall_2));
+    float f1_score_3 = 2 * ((Precision_3 * Recall_3) / (Precision_3 + Recall_3));
+    float f1_score_4 = 2 * ((Precision_4 * Recall_4) / (Precision_4 + Recall_4));
 
-    float Macro_f1_score = 2 * ((Macro_Precision*Macro_Recall) / (Macro_Precision + Macro_Recall));
-    float Micro_f1_score = 2 * ((Micro_Precision*Micro_Recall) / (Micro_Precision + Micro_Recall));
-    
+    float Macro_f1_score = 2 * ((Macro_Precision * Macro_Recall) / (Macro_Precision + Macro_Recall));
+    float Micro_f1_score = 2 * ((Micro_Precision * Micro_Recall) / (Micro_Precision + Micro_Recall));
+
     Serial.println("\t\tPrecision\tRecall\t\tF1-Score");
     Serial.println();
     Serial.println("Klasse 1\t" + String(Precision_1) + "\t\t" + String(Recall_1) + "\t\t" + String(f1_score_1));

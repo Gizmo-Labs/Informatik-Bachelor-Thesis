@@ -10,21 +10,22 @@
 ********************************************************/
 armband myo;
 
-
 /********************************************************
   Extern deklarierte Instanzen
 ********************************************************/
 extern u_int8_t ICounter1;
 extern MYO_DATA *myo_control_t;
 extern TINYML_DATA *data_collecting_t;
+
 extern TARGET_DATA *target_data_t;
+extern OUTPUT_DATA *output_data_t;
 extern INPUT_DATA *input_data_t;
+
+Eloquent::TF::Sequential<TF_NUM_OPS, ARENA_SIZE> tf;
 
 /********************************************************
   Definition Globale Variablen
 ********************************************************/
-SET_LOOP_TASK_STACK_SIZE( 16*1024 ); // 16KB
-
 
 void initMyo()
 {
@@ -55,7 +56,7 @@ void setup()
   Serial.begin(115200);
   Serial.println(ARDUINO_BOARD);
 
-  //WiFiStart();
+  WiFiStart();
 
   /********************************************************
     Interrupt-Service-Routinen starten
@@ -65,6 +66,7 @@ void setup()
   myo_control_t = new MYO_DATA();
   data_collecting_t = new TINYML_DATA();
   target_data_t = new TARGET_DATA();
+  output_data_t = new OUTPUT_DATA();
   input_data_t = new INPUT_DATA();
 
   /********************************************************
@@ -87,13 +89,68 @@ void setup()
   {
     Serial.println("Dateisystem erfolgreich erstellt!");
   }
-  
-  //readLabels();
-  //readInput();
 
-  buildModel();
-  //runTraining();
+  readLabels();
+  readInput();
 
+  // uint8_t error;
+
+  // error = buildModel();
+
+  // if (error == 1)
+  //{
+  // Serial.println("Modell konnte nicht erzeugt werden!");
+  // return;
+  //}
+
+  // uint32_t start = millis();
+
+  // for (uint8_t i = 0; i < 200; i++)
+  // {
+  //   // runInferenz(input_data_t->fInput_Data[i], output_data_t->fOutput_Data[i]);
+  // }
+
+  // uint32_t end = millis() - start;
+
+  // // Serial.printf(" Zeit fuer Inferenz : %lu ms\r\n", end);
+  // //for (uint8_t k = 0; k < 10; k++)
+  // //{
+  // runTraining(*input_data_t->fInput_Data, *target_data_t->fTarget_Label);
+  // //}
+
+  while (!tf.begin(FCNN).isOk())
+    Serial.println(tf.exception.toString());
+  delay(1000);
+
+  int i = 0;
+  int A[4];
+
+  for (i = 0; i < 200; i++)
+  {
+    if (!tf.predict(input_data_t->fInput_Data[i]).isOk())
+    {
+      Serial.println(tf.exception.toString());
+      return;
+    }
+
+    for (int j = 0; j < 4; j++)
+    {
+      // Serial.print(String(target_data_t->iTarget_Label[i][j]));
+      A[j] = target_data_t->iTarget_Label[i][j];
+    }
+
+    const int N = 4;
+    int index = std::distance(A, std::max_element(A, A + N));
+
+    Serial.print("Erwartet wurde die Klasse " + String(index) + ", Vorhergesagt wurde die Klasse ");
+    Serial.println(tf.classification);
+
+    Serial.print("Das hat gedauert ");
+    Serial.print(tf.benchmark.microseconds());
+    Serial.println("us fuer eine Vorhersage");
+
+    delay(200);
+  }
 }
 
 void loop()
@@ -210,14 +267,14 @@ void loop()
       sendStatusData();
       trafficLight();
     }
-    
+
     if ((data_collecting_t->iRepetitions) == data_collecting_t->iRepetitions_done)
     {
       data_collecting_t->flag_start_collecting = false;
       sendStatusData();
       data_collecting_t->iRepetitions_done = 0;
       data_collecting_t->iDatapoints[data_collecting_t->iLabel] = 0;
-    }    
+    }
   }
 
   if ((data_collecting_t->flag_start_collecting == true) && (myo.connected == false))
@@ -227,3 +284,13 @@ void loop()
     sendStatusText("Datenaufnahme nicht möglich!");
   }
 }
+
+// int findMaxIndex(int i, int array[ROWS_OF_DATA][NUM_OF_CLASSES])
+// {
+//   int A[][4] = array[i][4];
+
+//   const int N = 4;
+//   int index = std::distance(A, std::max_element(A, A + N));
+
+//   return index;
+// }

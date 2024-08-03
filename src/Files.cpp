@@ -3,7 +3,6 @@
 ********************************************************/
 #include "Prototypes.h"
 
-
 /********************************************************
   Extern deklarierte Instanzen
 ********************************************************/
@@ -14,7 +13,6 @@ extern INPUT_DATA *input_data_t;
   Lokal deklarierte Instanzen
 ********************************************************/
 File file;
-
 
 /********************************************************
   Datei von Dateisystem lesen
@@ -68,7 +66,6 @@ void readFile(fs::FS &fs, const char *path)
     }
 }
 
-
 /********************************************************
   Datei auf Dateisystem schreiben
 ********************************************************/
@@ -93,7 +90,6 @@ void writeFile(fs::FS &fs, const char *path, const char *message)
     file.close();
 }
 
-
 /********************************************************
   Inhalte an bestehende Datei anhängen
 ********************************************************/
@@ -117,7 +113,6 @@ void appendFile(fs::FS &fs, const char *path, const char *message)
     }
     file.close();
 }
-
 
 /********************************************************
   Nur zu Testzwecken
@@ -186,7 +181,6 @@ void testFileIO(fs::FS &fs, const char *path)
     }
 }
 
-
 /********************************************************
   Hilfsfunktion von CSV-Parser
 ********************************************************/
@@ -194,7 +188,6 @@ char feedRowParser()
 {
     return file.read();
 }
-
 
 /********************************************************
   Hilfsfunktion von CSV-Parser
@@ -204,29 +197,30 @@ bool rowParserFinished()
     return ((file.available() > 0) ? false : true);
 }
 
-
 /********************************************************
   Training-Labels vom Dateisystem einlesen
 ********************************************************/
 void readLabels()
 {
-    CSV_Parser cp(/*format*/ "ffff", /*has_header*/ false);
+    CSV_Parser cp(/*format*/ "dddd", /*has_header*/ false);
 
     file = FFat.open("/y_train.csv", "r");
 
-    float *label_0 = (float *)cp[0];
-    float *label_1 = (float *)cp[1];
-    float *label_2 = (float *)cp[2];
-    float *label_3 = (float *)cp[3];
+    uint16_t *label_0 = (uint16_t *)cp[0];
+    uint16_t *label_1 = (uint16_t *)cp[1];
+    uint16_t *label_2 = (uint16_t *)cp[2];
+    uint16_t *label_3 = (uint16_t *)cp[3];
 
     int row_index = 0;
+
     uint32_t start = millis();
+
     while (cp.parseRow())
     {
-        target_data_t->fTarget_Label[row_index][0] = label_0[0];
-        target_data_t->fTarget_Label[row_index][1] = label_1[0];
-        target_data_t->fTarget_Label[row_index][2] = label_2[0];
-        target_data_t->fTarget_Label[row_index][3] = label_3[0];
+        target_data_t->iTarget_Label[row_index][0] = label_0[0];
+        target_data_t->iTarget_Label[row_index][1] = label_1[0];
+        target_data_t->iTarget_Label[row_index][2] = label_2[0];
+        target_data_t->iTarget_Label[row_index][3] = label_3[0];
 
         row_index++;
     }
@@ -235,8 +229,12 @@ void readLabels()
 
     if (DEBUG_LABEL_FILE_HANDLING)
     {
-        Serial.println("Parsed Rows : " + String(row_index));
-        Serial.printf(" Took %lu ms\r\n", end);
+        Serial.println();
+        Serial.println("Labels");
+        Serial.println();
+        Serial.println("Geparste Reihen : " + String(row_index));
+        Serial.printf(" Zeit : %lu ms\r\n", end);
+        Serial.println();
     }
 
     file.close();
@@ -247,11 +245,10 @@ void readLabels()
     {
         for (int j = 0; j < 20; j++)
         {
-            Serial.println("Reihe : " + String(j + 1) + " | " + String(target_data_t->fTarget_Label[j][0]) + " | " + String(target_data_t->fTarget_Label[j][1]) + " | " + String(target_data_t->fTarget_Label[j][2]) + " | " + String(target_data_t->fTarget_Label[j][3]));
+            Serial.println("Reihe : " + String(j + 1) + " | " + String(target_data_t->iTarget_Label[j][0]) + " | " + String(target_data_t->iTarget_Label[j][1]) + " | " + String(target_data_t->iTarget_Label[j][2]) + " | " + String(target_data_t->iTarget_Label[j][3]));
         }
     }
 }
-
 
 /********************************************************
   Training-Daten vom Dateisystem einlesen
@@ -328,14 +325,13 @@ void readInput()
     float *signal_62 = (float *)cp[62];
     float *signal_63 = (float *)cp[63];
 
-
     int row_index = 0;
     uint32_t start = millis();
-    
+
     while (cp.parseRow())
     {
         input_data_t->fInput_Data[row_index][0] = signal_0[0];
-    	input_data_t->fInput_Data[row_index][1] = signal_1[0];
+        input_data_t->fInput_Data[row_index][1] = signal_1[0];
         input_data_t->fInput_Data[row_index][2] = signal_2[0];
         input_data_t->fInput_Data[row_index][3] = signal_3[0];
         input_data_t->fInput_Data[row_index][4] = signal_4[0];
@@ -345,7 +341,7 @@ void readInput()
         input_data_t->fInput_Data[row_index][8] = signal_8[0];
         input_data_t->fInput_Data[row_index][9] = signal_9[0];
         input_data_t->fInput_Data[row_index][10] = signal_10[0];
-    	input_data_t->fInput_Data[row_index][11] = signal_11[0];
+        input_data_t->fInput_Data[row_index][11] = signal_11[0];
         input_data_t->fInput_Data[row_index][12] = signal_12[0];
         input_data_t->fInput_Data[row_index][13] = signal_13[0];
         input_data_t->fInput_Data[row_index][14] = signal_14[0];
@@ -355,7 +351,7 @@ void readInput()
         input_data_t->fInput_Data[row_index][18] = signal_18[0];
         input_data_t->fInput_Data[row_index][19] = signal_19[0];
         input_data_t->fInput_Data[row_index][20] = signal_20[0];
-    	input_data_t->fInput_Data[row_index][21] = signal_21[0];
+        input_data_t->fInput_Data[row_index][21] = signal_21[0];
         input_data_t->fInput_Data[row_index][22] = signal_22[0];
         input_data_t->fInput_Data[row_index][23] = signal_23[0];
         input_data_t->fInput_Data[row_index][24] = signal_24[0];
@@ -365,7 +361,7 @@ void readInput()
         input_data_t->fInput_Data[row_index][28] = signal_28[0];
         input_data_t->fInput_Data[row_index][29] = signal_29[0];
         input_data_t->fInput_Data[row_index][30] = signal_30[0];
-    	input_data_t->fInput_Data[row_index][31] = signal_31[0];
+        input_data_t->fInput_Data[row_index][31] = signal_31[0];
         input_data_t->fInput_Data[row_index][32] = signal_32[0];
         input_data_t->fInput_Data[row_index][33] = signal_33[0];
         input_data_t->fInput_Data[row_index][34] = signal_34[0];
@@ -375,7 +371,7 @@ void readInput()
         input_data_t->fInput_Data[row_index][38] = signal_38[0];
         input_data_t->fInput_Data[row_index][39] = signal_39[0];
         input_data_t->fInput_Data[row_index][40] = signal_40[0];
-    	input_data_t->fInput_Data[row_index][41] = signal_41[0];
+        input_data_t->fInput_Data[row_index][41] = signal_41[0];
         input_data_t->fInput_Data[row_index][42] = signal_42[0];
         input_data_t->fInput_Data[row_index][43] = signal_43[0];
         input_data_t->fInput_Data[row_index][44] = signal_44[0];
@@ -385,7 +381,7 @@ void readInput()
         input_data_t->fInput_Data[row_index][48] = signal_48[0];
         input_data_t->fInput_Data[row_index][49] = signal_49[0];
         input_data_t->fInput_Data[row_index][50] = signal_50[0];
-    	input_data_t->fInput_Data[row_index][51] = signal_51[0];
+        input_data_t->fInput_Data[row_index][51] = signal_51[0];
         input_data_t->fInput_Data[row_index][52] = signal_52[0];
         input_data_t->fInput_Data[row_index][53] = signal_53[0];
         input_data_t->fInput_Data[row_index][54] = signal_54[0];
@@ -395,10 +391,10 @@ void readInput()
         input_data_t->fInput_Data[row_index][58] = signal_58[0];
         input_data_t->fInput_Data[row_index][59] = signal_59[0];
         input_data_t->fInput_Data[row_index][60] = signal_60[0];
-    	input_data_t->fInput_Data[row_index][61] = signal_61[0];
+        input_data_t->fInput_Data[row_index][61] = signal_61[0];
         input_data_t->fInput_Data[row_index][62] = signal_62[0];
         input_data_t->fInput_Data[row_index][63] = signal_63[0];
-        
+
         row_index++;
     }
 
@@ -406,8 +402,12 @@ void readInput()
 
     if (DEBUG_FEATURE_FILE_HANDLING)
     {
-        Serial.println("Parsed Rows : " + String(row_index));
-        Serial.printf(" Took %lu ms\r\n", end);
+        Serial.println();
+        Serial.println("Features");
+        Serial.println();
+        Serial.println("Geparste Zeilen : " + String(row_index));
+        Serial.printf(" Zeit : %lu ms\r\n", end);
+        Serial.println();
     }
 
     file.close();
@@ -418,9 +418,7 @@ void readInput()
     {
         for (int j = 0; j < 20; j++)
         {
-            Serial.println("Reihe : " + String(j + 1) + " | " + String(input_data_t->fInput_Data[j][0], 4) + " | " + String(input_data_t->fInput_Data[j][1], 4) + " | " + String(input_data_t->fInput_Data[j][2], 4) 
-            + " | " + String(input_data_t->fInput_Data[j][3], 4) + " | " + String(input_data_t->fInput_Data[j][4], 4) + " | " + String(input_data_t->fInput_Data[j][5], 4) + " | " + String(input_data_t->fInput_Data[j][6], 4)
-            + " | " + String(input_data_t->fInput_Data[j][7], 4) + " | ");
+            Serial.println("Reihe : " + String(j + 1) + " | " + String(input_data_t->fInput_Data[j][0], 4) + " | " + String(input_data_t->fInput_Data[j][1], 4) + " | " + String(input_data_t->fInput_Data[j][2], 4) + " | " + String(input_data_t->fInput_Data[j][3], 4) + " | " + String(input_data_t->fInput_Data[j][4], 4) + " | " + String(input_data_t->fInput_Data[j][5], 4) + " | " + String(input_data_t->fInput_Data[j][6], 4) + " | " + String(input_data_t->fInput_Data[j][7], 4) + " | ");
         }
     }
 }

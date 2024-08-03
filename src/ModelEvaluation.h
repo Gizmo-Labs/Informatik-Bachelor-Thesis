@@ -16,4 +16,4 @@ void runConfusionMatrix();
 /********************************************************
   Globale Konstanten 
 ********************************************************/
-#define ARENA_SIZE 200000
+#define ARENA_SIZE 50000

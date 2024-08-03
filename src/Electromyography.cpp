@@ -21,13 +21,10 @@ extern TARGET_DATA *target_data_t;
 extern OUTPUT_DATA *output_data_t;
 extern INPUT_DATA *input_data_t;
 
-
-
 /********************************************************
   Definition Globale Variablen
 ********************************************************/
 extern Eloquent::TF::Sequential<TF_NUM_OPS, ARENA_SIZE> tf;
-
 
 
 void initMyo()
@@ -50,6 +47,7 @@ void initMyo()
   myo_control_t->flag_connect_bluetooth = false;
   myo_control_t->flag_myo_sleepmode_external = false;
 }
+
 
 void setup()
 {
@@ -260,13 +258,3 @@ void loop()
     sendStatusText("Datenaufnahme nicht möglich!");
   }
 }
-
-// int findMaxIndex(int i, int array[ROWS_OF_DATA][NUM_OF_CLASSES])
-// {
-//   int A[][4] = array[i][4];
-
-//   const int N = 4;
-//   int index = std::distance(A, std::max_element(A, A + N));
-
-//   return index;
-// }

@@ -280,20 +280,31 @@ void runConfusionMatrix()
 
     float Prec_Oben = (True_Positives_Class_1 + True_Positives_Class_2 + True_Positives_Class_3 + True_Positives_Class_4) / 1.0f;
     float Prec_Unten = (True_Positives_Class_1 + False_Positives_Class_1 + True_Positives_Class_2 + False_Positives_Class_2 + True_Positives_Class_3 + False_Positives_Class_3 + True_Positives_Class_4 + False_Positives_Class_4) / 1.0f;
-    float Precision = Prec_Oben / Prec_Unten;
+    float Micro_Precision = Prec_Oben / Prec_Unten;
 
     float Recall_Unten = (True_Positives_Class_1 + False_Negatives_Class_1 + True_Positives_Class_2 + False_Negatives_Class_2 + True_Positives_Class_3 + False_Negatives_Class_3 + True_Positives_Class_4 + False_Negatives_Class_4) / 1.0f;
-    float Recall = Prec_Oben / Recall_Unten;
+    float Micro_Recall = Prec_Oben / Recall_Unten;
 
+    float Macro_Precision = (Precision_1 + Precision_2 + Precision_3 + Precision_4 / 1.0f) / 4;
+    float Macro_Recall = (Recall_1 + Recall_2 + Recall_3 + Recall_4 / 1.0f) / 4;
 
-    Serial.println("\tPrecision\tRecall\t");
+    float f1_score_1 = 2 * ((Precision_1*Recall_1) / (Precision_1 + Recall_1));
+    float f1_score_2 = 2 * ((Precision_2*Recall_2) / (Precision_2 + Recall_2));
+    float f1_score_3 = 2 * ((Precision_3*Recall_3) / (Precision_3 + Recall_3));
+    float f1_score_4 = 2 * ((Precision_4*Recall_4) / (Precision_4 + Recall_4));
+
+    float Macro_f1_score = 2 * ((Macro_Precision*Macro_Recall) / (Macro_Precision + Macro_Recall));
+    float Micro_f1_score = 2 * ((Micro_Precision*Micro_Recall) / (Micro_Precision + Micro_Recall));
+    
+    Serial.println("\t\tPrecision\tRecall\t\tF1-Score");
     Serial.println();
-    Serial.println("Klasse 1\t" + String(Precision_1) + "\t" + String(Recall_1));
-    Serial.println("Klasse 2\t" + String(Precision_2) + "\t" + String(Recall_2));
-    Serial.println("Klasse 3\t" + String(Precision_3) + "\t" + String(Recall_3));
-    Serial.println("Klasse 4\t" + String(Precision_4) + "\t" + String(Recall_4));
+    Serial.println("Klasse 1\t" + String(Precision_1) + "\t\t" + String(Recall_1) + "\t\t" + String(f1_score_1));
+    Serial.println("Klasse 2\t" + String(Precision_2) + "\t\t" + String(Recall_2) + "\t\t" + String(f1_score_2));
+    Serial.println("Klasse 3\t" + String(Precision_3) + "\t\t" + String(Recall_3) + "\t\t" + String(f1_score_3));
+    Serial.println("Klasse 4\t" + String(Precision_4) + "\t\t" + String(Recall_4) + "\t\t" + String(f1_score_4));
     Serial.println();
     Serial.println("-------------------------------------------------------------");
     Serial.println();
-    Serial.println("\t" + String(Precision) + "\t" + String(Recall));
+    Serial.println("Micro-Average\t" + String(Micro_Precision) + "\t\t" + String(Micro_Recall) + "\t\t" + String(Micro_f1_score));
+    Serial.println("Macro-Average\t" + String(Macro_Precision) + "\t\t" + String(Macro_Recall) + "\t\t" + String(Macro_f1_score));
 }

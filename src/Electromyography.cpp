@@ -21,11 +21,14 @@ extern TARGET_DATA *target_data_t;
 extern OUTPUT_DATA *output_data_t;
 extern INPUT_DATA *input_data_t;
 
-Eloquent::TF::Sequential<TF_NUM_OPS, ARENA_SIZE> tf;
+
 
 /********************************************************
   Definition Globale Variablen
 ********************************************************/
+extern Eloquent::TF::Sequential<TF_NUM_OPS, ARENA_SIZE> tf;
+
+
 
 void initMyo()
 {
@@ -122,35 +125,8 @@ void setup()
     Serial.println(tf.exception.toString());
   delay(1000);
 
-  int i = 0;
-  int A[4];
-
-  for (i = 0; i < 200; i++)
-  {
-    if (!tf.predict(input_data_t->fInput_Data[i]).isOk())
-    {
-      Serial.println(tf.exception.toString());
-      return;
-    }
-
-    for (int j = 0; j < 4; j++)
-    {
-      // Serial.print(String(target_data_t->iTarget_Label[i][j]));
-      A[j] = target_data_t->iTarget_Label[i][j];
-    }
-
-    const int N = 4;
-    int index = std::distance(A, std::max_element(A, A + N));
-
-    Serial.print("Erwartet wurde die Klasse " + String(index) + ", Vorhergesagt wurde die Klasse ");
-    Serial.println(tf.classification);
-
-    Serial.print("Das hat gedauert ");
-    Serial.print(tf.benchmark.microseconds());
-    Serial.println("us fuer eine Vorhersage");
-
-    delay(200);
-  }
+  runConfusionMatrix();
+  
 }
 
 void loop()

@@ -204,7 +204,7 @@ void readLabels()
 {
     CSV_Parser cp(/*format*/ "dddd", /*has_header*/ false);
 
-    file = FFat.open("/y_train.csv", "r");
+    file = FFat.open("/y_val.csv", "r");
 
     uint16_t *label_0 = (uint16_t *)cp[0];
     uint16_t *label_1 = (uint16_t *)cp[1];
@@ -257,7 +257,7 @@ void readInput()
 {
     CSV_Parser cp(/*format*/ "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff", /*has_header*/ false);
 
-    file = FFat.open("/X_train.csv", "r");
+    file = FFat.open("/X_val.csv", "r");
 
     float *signal_0 = (float *)cp[0];
     float *signal_1 = (float *)cp[1];

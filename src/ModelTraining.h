@@ -13,7 +13,7 @@ void error_handling_training(int8_t error_nr);
 /********************************************************
   Globale Konstanten Training-Daten
 ********************************************************/
-#define ROWS_OF_DATA 3395
+#define ROWS_OF_DATA 1456
 #define NUM_OF_CLASSES 4
 #define FEATURES 64
 

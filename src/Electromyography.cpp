@@ -17,9 +17,8 @@ extern u_int8_t ICounter1;
 extern MYO_DATA *myo_control_t;
 extern TINYML_DATA *data_collecting_t;
 
-extern TARGET_DATA *target_data_t;
-extern OUTPUT_DATA *output_data_t;
-extern INPUT_DATA *input_data_t;
+extern MODEL_DATA *model_data_t;
+extern EVALUATION_DATA *evaluation_data_t;
 
 /********************************************************
   Definition Globale Variablen
@@ -44,7 +43,6 @@ void initMyo()
   myo.set_sleep_mode(1);
 
   myo_control_t->flag_connect_bluetooth = false;
-  myo_control_t->flag_myo_sleepmode_external = false;
 }
 
 void setup()
@@ -64,9 +62,8 @@ void setup()
 
   myo_control_t = new MYO_DATA();
   data_collecting_t = new TINYML_DATA();
-  target_data_t = new TARGET_DATA();
-  output_data_t = new OUTPUT_DATA();
-  input_data_t = new INPUT_DATA();
+  model_data_t = new MODEL_DATA();
+  evaluation_data_t = new EVALUATION_DATA();
 
   /********************************************************
     RGB-LED initialisieren
@@ -77,7 +74,6 @@ void setup()
     MQTT initialisieren
   ********************************************************/
   initMqtt();
-  sendStatusMyo();
 
   if (!FFat.begin(FORMAT_FFAT_IF_FAILED, "/ffat", 10, "ffat"))
   {
@@ -89,19 +85,56 @@ void setup()
     Serial.println("Dateisystem erfolgreich erstellt!");
   }
 
-  readLabels();
-  readInput();
-
   while (!tf.begin(FCNN).isOk())
     Serial.println(tf.exception.toString());
 
-  delay(1000);
+  // delay(1000);
 
-  runConfusionMatrix();
+  // runConfusionMatrix();
 }
 
 void loop()
 {
+  /********************************************************
+      Lade Testdaten
+  ********************************************************/
+  if ((evaluation_data_t->flag_load_testdata == true))
+  {
+    evaluation_data_t->flag_load_testdata = false;
+    readTestLabels();
+    readTestInput();
+
+    if ((evaluation_data_t->flag_loaded_testinputs == true) && (evaluation_data_t->flag_loaded_testlabels == true))
+    {
+      evaluation_data_t->flag_loaded_testdata = true;
+      sendSomewhat(PREFIX_EVAL + "_Load_Testdata", Evaluation_Topic, "false");
+      sendSomewhat(PREFIX_EVAL + "_State_Testdata", Evaluation_Topic, "1");
+      sendStatusText("Ladevorgang Testdaten erfolgreich!");
+      delay(1000);
+    }
+  }
+
+
+  /********************************************************
+      Lade Validierungsdaten
+  ********************************************************/
+  if ((evaluation_data_t->flag_load_validationdata == true))
+  {
+    evaluation_data_t->flag_load_validationdata = false;
+    readValidationLabels();
+    readValidationInput();
+
+    if ((evaluation_data_t->flag_loaded_validationinputs == true) && (evaluation_data_t->flag_loaded_validationlabels == true))
+    {
+      evaluation_data_t->flag_loaded_validationdata = true;
+      sendSomewhat(PREFIX_EVAL + "_Load_Valdata", Evaluation_Topic, "false");
+      sendSomewhat(PREFIX_EVAL + "_State_Valdata", Evaluation_Topic, "1");
+      sendStatusText("Ladevorgang Validierungsdaten erfolgreich!");
+      delay(1000);
+    }
+  }
+
+
   /********************************************************
     Zyklisch Allgemeine Daten behandeln
     Wert in Sekunden
@@ -119,6 +152,7 @@ void loop()
   if (updateStatus())
   {
     sendStatusMyo();
+    sendStatusData();
 
     if ((myo.connected == false) && (myo_control_t->flag_myo_connected == false) && (myo_control_t->flag_connect_bluetooth == false) && (data_collecting_t->flag_start_collecting == false))
     {
@@ -127,6 +161,18 @@ void loop()
     else if ((myo.connected == true) && (data_collecting_t->flag_traffic_light == false))
     {
       sendStatusText("Armband verbunden --> Betriebsbereit!");
+    }
+
+    if ((evaluation_data_t->flag_load_testdata == false) && (evaluation_data_t->flag_loaded_testdata == false))
+    {
+      sendSomewhat(PREFIX_EVAL + "_Load_Testdata", Evaluation_Topic, "false");
+      sendSomewhat(PREFIX_EVAL + "_State_Testdata", Evaluation_Topic, "0");
+    }
+
+    if ((evaluation_data_t->flag_load_validationdata == false) && (evaluation_data_t->flag_loaded_validationdata == false))
+    {
+      sendSomewhat(PREFIX_EVAL + "_Load_Valdata", Evaluation_Topic, "false");
+      sendSomewhat(PREFIX_EVAL + "_State_Valdata", Evaluation_Topic, "0");
     }
   }
 
@@ -148,26 +194,6 @@ void loop()
   }
 
   /********************************************************
-    Sleepmode über GUI einstellen
-  ********************************************************/
-  if (myo_control_t->flag_myo_sleepmode_external == true && myo_control_t->flag_myo_sleepmode_internal == false)
-  {
-    if (DEBUG_ELECTROMYOGRAPHY)
-      Serial.println("Changed SleepMode --> Now 0");
-
-    myo.set_sleep_mode(0);
-    myo_control_t->flag_myo_sleepmode_internal = true;
-  }
-  else if (myo_control_t->flag_myo_sleepmode_external == false && myo_control_t->flag_myo_sleepmode_internal == true)
-  {
-    if (DEBUG_ELECTROMYOGRAPHY)
-      Serial.println("Changed SleepMode --> Now 1");
-
-    myo.set_sleep_mode(1);
-    myo_control_t->flag_myo_sleepmode_internal = false;
-  }
-
-  /********************************************************
     Arband ist verbunden und war es vorher nicht
   ********************************************************/
   if ((myo.connected == true) && (myo_control_t->flag_myo_connected == false))
@@ -175,7 +201,6 @@ void loop()
     setNeoColor(0, 0, 255); // Blau
     myo_control_t->flag_myo_connected = true;
     myo_control_t->flag_connect_bluetooth = false;
-    myo_control_t->flag_myo_sleepmode_external = false;
   }
   /********************************************************
     Armband ist verbunden und kein Data-Collecting
@@ -192,7 +217,6 @@ void loop()
     sendStatusText("Myo-Armband getrennt!");
     setNeoColor(255, 0, 0); // Rot
     myo_control_t->flag_myo_connected = false;
-    myo_control_t->flag_myo_sleepmode_external = false;
     data_collecting_t->flag_start_collecting = false;
   }
   /********************************************************

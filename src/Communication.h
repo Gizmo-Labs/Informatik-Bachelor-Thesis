@@ -44,8 +44,10 @@ String ConvertResetReasonToString(esp_reset_reason_t reason);
 
 static const String PREFIX_MYO = "TinyML_ControlMyo";
 static const String PREFIX_DATA = "TinyML_DataCollect";
+static const String PREFIX_EVAL = "TinyML_Evaluation";
 static const String PREFIX_MEMORY = "TinyML_Memory";
 static const String PREFIX_GENERAL = "TinyML_General";
+
 
 /********************************************************
   Deklaration Globale Variablen Kommunikation
@@ -54,14 +56,14 @@ extern String IP;
 extern const char* host;
 
 // Subscribe Topics
-extern const char *Data_Topic;
-extern const char *Train_Topic;
-
-// Publish Topics
-extern const char *General_Topic;
-extern const char *Metrics_Topic;
 extern const char *Classify_Topic;
+extern const char *Data_Topic;
+extern const char *Evaluation_Topic;
+extern const char *General_Topic;
+extern const char *Train_Topic;
+extern const char *Metrics_Topic;
 extern const char *Memory_Topic;
+extern const char *Myo_Topic;
 
 
 /********************************************************
@@ -70,12 +72,9 @@ extern const char *Memory_Topic;
 typedef struct
 {
     volatile bool flag_connect_bluetooth;          
-    volatile bool flag_myo_sleepmode_external;
-    volatile bool flag_myo_sleepmode_internal;          
     volatile bool flag_myo_connected;
     volatile bool flag_monitor_external;
     volatile bool flag_monitor_internal;    
-    uint8_t myo_battery_status;
 } MYO_DATA;
 
 
@@ -95,7 +94,7 @@ struct SpiRamAllocator : ArduinoJson::Allocator
   }
 
   void *reallocate(void *ptr, size_t new_size) override
-  {
+{
     return heap_caps_realloc(ptr, new_size, MALLOC_CAP_SPIRAM);
   }
 };

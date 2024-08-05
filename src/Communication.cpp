@@ -17,15 +17,11 @@ extern "C"
 ********************************************************/
 const char *host = "Embedded-AI";
 
-// Topics für Publish
+// MQTT-Topics 
 const char *General_Topic = "TinyML/General";
-const char *Metrics_Topic = "TinyML/Metrics";
-const char *Classify_Topic = "TinyML/Classify";
 const char *Memory_Topic = "TinyML/Memory";
-
-// Topics für Subscribe
 const char *Data_Topic = "TinyML/DataCollect";
-const char *Train_Topic = "TinyML/Training";
+const char *Evaluation_Topic = "TinyML/Evaluation";
 const char *Myo_Topic = "TinyML/ControlMyo";
 
 const char *cLabel = "";
@@ -40,6 +36,8 @@ SpiRamAllocator allocator;
 
 MYO_DATA *myo_control_t = (MYO_DATA *)heap_caps_malloc(sizeof(MYO_DATA), MALLOC_CAP_SPIRAM);
 extern TINYML_DATA *data_collecting_t;
+extern EVALUATION_DATA *evaluation_data_t;
+
 
 /********************************************************
   MQTT-Handler
@@ -205,7 +203,7 @@ void onMqttConnect(bool sessionPresent)
 
   printSeparationLine();
 
-  uint16_t packetIdSub2 = mqttClient.subscribe(Train_Topic, 0);
+  uint16_t packetIdSub2 = mqttClient.subscribe(Evaluation_Topic, 0);
   if (DEBUG_COMMUNICATION)
   {
     Serial.print("Subscribing at QoS 0, packetId: ");
@@ -243,6 +241,7 @@ void onMqttConnect(bool sessionPresent)
 
   sendSomewhat(PREFIX_MYO, Myo_Topic, "Topic TinyML_MyoControl ist bereit!");
   sendSomewhat(PREFIX_DATA, Data_Topic, "Topic TinyML_DataCollect ist bereit!");
+  sendSomewhat(PREFIX_EVAL, Evaluation_Topic, "Topic TinyML_Evaluation ist bereit!");
   sendSomewhat(PREFIX_GENERAL, General_Topic, "Topic TinyML_General ist bereit!");
   sendSomewhat(PREFIX_MEMORY, Memory_Topic, "Topic TinyML_Memory ist bereit!");
 }
@@ -358,54 +357,68 @@ void onMqttMessage(char *topic, char *payload, const AsyncMqttClientMessagePrope
     String sBLEConnect = doc[PREFIX_MYO + "_Connect_Bluetooth"];
     if (sBLEConnect.indexOf("true") >= 0)
     {
-      // myo_control_t.flag_connect_bluetooth = true;
       myo_control_t->flag_connect_bluetooth = true;
     }
     else
     {
-      // myo_control_t.flag_connect_bluetooth = false;
       myo_control_t->flag_connect_bluetooth = false;
-    }
-
-    // Lese Button Sleepmode aus UI
-    String sSetSleepMode = doc[PREFIX_MYO + "_Set_SleepMode"];
-    if (sSetSleepMode.indexOf("true") >= 0)
-    {
-      // myo_control_t.flag_myo_sleepmode_external = true;
-      myo_control_t->flag_myo_sleepmode_external = true;
-    }
-    else
-    {
-      // myo_control_t.flag_myo_sleepmode_external = false;
-      myo_control_t->flag_myo_sleepmode_external = false;
     }
 
     // Lese Button Speicher aufzeichnen aus UI
     String sMonitorInternal = doc[PREFIX_MYO + "_Monitor_IntRAM"];
     if (sMonitorInternal.indexOf("true") >= 0)
-    {
-      // myo_control_t.flag_monitor_internal = true;
+    {      
       myo_control_t->flag_monitor_internal = true;
     }
     else
-    {
-      // myo_control_t.flag_monitor_internal = false;
+    {     
       myo_control_t->flag_monitor_internal = false;
     }
 
     // Lese Button EMG-Signal aufzeichnen aus UI
     String sMonitorExternal = doc[PREFIX_MYO + "_Monitor_ExtRAM"];
     if (sMonitorExternal.indexOf("true") >= 0)
-    {
-      // myo_control_t.flag_monitor_external = true;
+    {     
       myo_control_t->flag_monitor_external = true;
     }
     else
-    {
-      // myo_control_t.flag_monitor_external = false;
+    {     
       myo_control_t->flag_monitor_external = false;
     }
   }
+
+  // Bei Message an Topic "TinyML/Evaluation" ...
+  if (String(topic).indexOf("TinyML/Evaluation") >= 0)
+  {
+    // Lese Button "Lade Testdaten" aus UI
+    String sLoadTestData = doc[PREFIX_EVAL + "_Load_Testdata"];
+    if (sLoadTestData.indexOf("true") >= 0)
+    {      
+      evaluation_data_t->flag_load_testdata = true;    
+      evaluation_data_t->flag_loaded_testdata = false;    
+      sendSomewhat(PREFIX_EVAL + "_Load_Testdata", Evaluation_Topic, "false");
+      sendSomewhat(PREFIX_EVAL + "_State_Testdata", Evaluation_Topic, "0");  
+    }
+    else
+    {
+      evaluation_data_t->flag_load_testdata = false;
+    }
+
+  // Lese Button "Lade Validierungsdaten" aus UI
+    String sLoadValidationData = doc[PREFIX_EVAL + "_Load_Valdata"];
+    if (sLoadValidationData.indexOf("true") >= 0)
+    {      
+      evaluation_data_t->flag_load_validationdata = true;    
+      evaluation_data_t->flag_loaded_validationdata = false;    
+      sendSomewhat(PREFIX_EVAL + "_Load_Valdata", Evaluation_Topic, "false");
+      sendSomewhat(PREFIX_EVAL + "_State_Valdata", Evaluation_Topic, "0");  
+    }
+    else
+    {
+      evaluation_data_t->flag_load_validationdata = false;
+    }    
+  }
+
 }
 
 /********************************************************
@@ -546,7 +559,6 @@ void sendStatusMyo()
 
   status[PREFIX_MYO + "_Connect_Bluetooth"] = myo_control_t->flag_connect_bluetooth;
   status[PREFIX_MYO + "_Status_BLE"] = myo_control_t->flag_myo_connected;
-  status[PREFIX_MYO + "_Set_SleepMode"] = myo_control_t->flag_myo_sleepmode_external;
   status[PREFIX_MYO + "_Monitor_IntRAM"] = myo_control_t->flag_monitor_internal;
   status[PREFIX_MYO + "_Monitor_ExtRAM"] = myo_control_t->flag_monitor_external;
 

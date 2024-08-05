@@ -11,14 +11,8 @@ Eloquent::TF::Sequential<TF_NUM_OPS, ARENA_SIZE> tf;
 /********************************************************
   Array für Training-Labels auf PSRAM allokieren
 ********************************************************/
-TARGET_DATA *target_data_t = (TARGET_DATA *)heap_caps_malloc(sizeof(TARGET_DATA), MALLOC_CAP_SPIRAM);
-OUTPUT_DATA *output_data_t = (OUTPUT_DATA *)heap_caps_malloc(sizeof(OUTPUT_DATA), MALLOC_CAP_SPIRAM);
-
-
-/********************************************************
-  Array für Input-Daten auf PSRAM allokieren
-********************************************************/
-INPUT_DATA *input_data_t = (INPUT_DATA *)heap_caps_malloc(sizeof(INPUT_DATA), MALLOC_CAP_SPIRAM);
+MODEL_DATA *model_data_t = (MODEL_DATA *)heap_caps_malloc(sizeof(MODEL_DATA), MALLOC_CAP_SPIRAM);
+EVALUATION_DATA *evaluation_data_t = (EVALUATION_DATA *)heap_caps_malloc(sizeof(EVALUATION_DATA), MALLOC_CAP_SPIRAM);
 
 
 /********************************************************
@@ -53,7 +47,7 @@ void runConfusionMatrix()
     for (i = 0; i < 200; i++)
     {
         // Checke ob Vorhersage korrekt ausgeführt wurde
-        if (!tf.predict(input_data_t->fInput_Data[i]).isOk())
+        if (!tf.predict(model_data_t->fTest_Data[i]).isOk())
         {
             Serial.println(tf.exception.toString());
             return;
@@ -62,7 +56,7 @@ void runConfusionMatrix()
         // Ermitteln des korrekten Labels aus dem Struct
         for (int j = 0; j < 4; j++)
         {
-            A[j] = target_data_t->iTarget_Label[i][j];
+            A[j] = model_data_t->iTest_Label[i][j];
         }
 
         // Index der "1" aus dem One-Hot-Encoded Array ermitteln

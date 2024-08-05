@@ -9,7 +9,10 @@
 /********************************************************
   Funktions-Prototypen
 ********************************************************/
-void runConfusionMatrix();
+void runTestConfusionMatrix(int rows);
+void runValidationConfusionMatrix(int rows);
+void runClassifier();
+
 
 /********************************************************
   Globale Konstanten
@@ -37,7 +40,9 @@ typedef struct
 ********************************************************/
 typedef struct
 {
-  volatile bool flag_start_classfying;
+  volatile bool flag_start_classifying;
+  volatile bool flag_classifying_light;
+  volatile bool flag_start_evaluation;
   volatile bool flag_load_testdata;
   volatile bool flag_load_validationdata;  
   volatile bool flag_loaded_testdata;

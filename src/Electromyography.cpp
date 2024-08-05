@@ -86,11 +86,7 @@ void setup()
   }
 
   while (!tf.begin(FCNN).isOk())
-    Serial.println(tf.exception.toString());
-
-  // delay(1000);
-
-  // runConfusionMatrix();
+    Serial.println(tf.exception.toString());  
 }
 
 void loop()
@@ -114,7 +110,6 @@ void loop()
     }
   }
 
-
   /********************************************************
       Lade Validierungsdaten
   ********************************************************/
@@ -132,6 +127,24 @@ void loop()
       sendStatusText("Ladevorgang Validierungsdaten erfolgreich!");
       delay(1000);
     }
+  }
+
+  /********************************************************
+      Führe Evaluierung aus
+  ********************************************************/
+  if ((evaluation_data_t->flag_start_evaluation == true) && ((evaluation_data_t->flag_loaded_testdata == true) || (evaluation_data_t->flag_loaded_validationdata == true)))
+  {
+    evaluation_data_t->flag_start_evaluation = false;
+    runTestConfusionMatrix(ROWS_OF_TESTDATA);
+    sendSomewhat(PREFIX_EVAL + "_Start_Evaluation", Evaluation_Topic, "false");
+  }
+  
+  if((evaluation_data_t->flag_start_evaluation == true) && (evaluation_data_t->flag_loaded_testdata == false) && (evaluation_data_t->flag_loaded_validationdata == false))
+  {
+    evaluation_data_t->flag_start_evaluation = false;    
+    sendStatusText("Evaluierung nicht möglich! Keine Daten geladen!");    
+    delay(5000);
+    sendSomewhat(PREFIX_EVAL + "_Start_Evaluation", Evaluation_Topic, "false");
   }
 
 
@@ -158,10 +171,11 @@ void loop()
     {
       sendStatusText("System bereit --> wartet auf Armband!");
     }
-    else if ((myo.connected == true) && (data_collecting_t->flag_traffic_light == false))
+    else if ((myo.connected == true) && (data_collecting_t->flag_traffic_light == false) && (evaluation_data_t->flag_start_classifying == false))
     {
       sendStatusText("Armband verbunden --> Betriebsbereit!");
     }
+
 
     if ((evaluation_data_t->flag_load_testdata == false) && (evaluation_data_t->flag_loaded_testdata == false))
     {
@@ -173,6 +187,11 @@ void loop()
     {
       sendSomewhat(PREFIX_EVAL + "_Load_Valdata", Evaluation_Topic, "false");
       sendSomewhat(PREFIX_EVAL + "_State_Valdata", Evaluation_Topic, "0");
+    }
+
+    if (evaluation_data_t->flag_start_classifying == false)
+    {
+      sendSomewhat(PREFIX_EVAL + "_Result_Classifier", Evaluation_Topic, "4");      
     }
   }
 
@@ -194,18 +213,18 @@ void loop()
   }
 
   /********************************************************
-    Arband ist verbunden und war es vorher nicht
+    Armband ist verbunden und war es vorher nicht
   ********************************************************/
   if ((myo.connected == true) && (myo_control_t->flag_myo_connected == false))
   {
-    setNeoColor(0, 0, 255); // Blau
+    //setNeoColor(0, 0, 255); // Blau
     myo_control_t->flag_myo_connected = true;
     myo_control_t->flag_connect_bluetooth = false;
   }
   /********************************************************
     Armband ist verbunden und kein Data-Collecting
   ********************************************************/
-  else if ((myo.connected == true) && (data_collecting_t->flag_traffic_light == false))
+  else if ((myo.connected == true) && (data_collecting_t->flag_traffic_light == false) && (evaluation_data_t->flag_classifying_light == false))
   {
     setNeoColor(0, 0, 255); // Blau
   }
@@ -253,5 +272,21 @@ void loop()
     data_collecting_t->flag_start_collecting = false;
     sendSomewhat(PREFIX_DATA + "_Start_Collecting", Data_Topic, "false");
     sendStatusText("Datenaufnahme nicht möglich!");
+  }
+
+  /********************************************************
+    Gesten-Klassifizierung
+  ********************************************************/
+  if ((evaluation_data_t->flag_start_classifying == true) && (myo.connected == true))
+  {        
+    runClassifier();
+  }
+    
+  
+  if ((evaluation_data_t->flag_start_classifying == true) && (myo.connected == false))
+  {    
+    sendSomewhat(PREFIX_EVAL + "_Start_Classifying", Evaluation_Topic, "false");
+    sendStatusText("Klassifizierung nicht möglich!");
+    delay(5000);
   }
 }

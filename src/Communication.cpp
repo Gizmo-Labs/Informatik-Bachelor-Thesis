@@ -416,9 +416,30 @@ void onMqttMessage(char *topic, char *payload, const AsyncMqttClientMessagePrope
     else
     {
       evaluation_data_t->flag_load_validationdata = false;
-    }    
-  }
+    }  
 
+   // Lese Button "Starte Evaluierung" aus UI
+    String sStartEvaluation = doc[PREFIX_EVAL + "_Start_Evaluation"];
+    if (sStartEvaluation.indexOf("true") >= 0)
+    {      
+      evaluation_data_t->flag_start_evaluation = true;    
+    }
+    else
+    {
+      evaluation_data_t->flag_start_evaluation = false;
+    }
+
+    // Lese Button "Starte Klassifizierung" aus UI
+    String sStartClassifying = doc[PREFIX_EVAL + "_Start_Classifying"];
+    if (sStartClassifying.indexOf("true") >= 0)
+    {      
+      evaluation_data_t->flag_start_classifying = true;    
+    }
+    else
+    {
+      evaluation_data_t->flag_start_classifying = false;
+    }     
+  }
 }
 
 /********************************************************

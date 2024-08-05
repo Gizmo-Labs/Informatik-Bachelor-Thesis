@@ -18,6 +18,7 @@ long previousMemory = 0;
 long previousIdle = 0;
 
 extern TINYML_DATA *data_collecting_t;
+extern EVALUATION_DATA *evaluation_data_t;
 
 /********************************************************
   Farbe von RGB-LED einstellen
@@ -54,6 +55,20 @@ void trafficLight()
   setNeoColor(0, 255, 0); // Grün
   delay(PRE_TRAFFIC_LIGHT);
   data_collecting_t->flag_green_light = true;
+}
+
+
+/********************************************************
+  Blinken beim Klassifizieren
+********************************************************/
+void classifyingLight()
+{
+  evaluation_data_t->flag_classifying_light = true;
+  sendStatusText("Klassifizierung aktiv!");  
+  delay(PRE_CLASSIFYING_LIGHT);
+  setNeoColor(255, 0, 255); // Magenta
+  delay(PRE_CLASSIFYING_LIGHT);
+  setNeoColor(0, 0, 0); // Magenta  
 }
 
 

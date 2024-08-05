@@ -11,6 +11,7 @@
 void setNeoColor(uint8_t red, uint8_t green, uint8_t blue);
 void initNeo();
 void trafficLight();
+void classifyingLight();
 bool updateStatus();
 bool updateMemory();
 bool updateSerialOutput();
@@ -27,6 +28,7 @@ bool updateSerialOutput();
 #define MEMORY_UPDATE 4000
 
 #define PRE_TRAFFIC_LIGHT 1000
+#define PRE_CLASSIFYING_LIGHT 200
 
 
 /********************************************************

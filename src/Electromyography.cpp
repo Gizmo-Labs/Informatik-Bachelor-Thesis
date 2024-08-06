@@ -86,7 +86,7 @@ void setup()
   }
 
   while (!tf.begin(FCNN).isOk())
-    Serial.println(tf.exception.toString());  
+    Serial.println(tf.exception.toString());
 }
 
 void loop()
@@ -138,15 +138,14 @@ void loop()
     runTestConfusionMatrix(ROWS_OF_TESTDATA);
     sendSomewhat(PREFIX_EVAL + "_Start_Evaluation", Evaluation_Topic, "false");
   }
-  
-  if((evaluation_data_t->flag_start_evaluation == true) && (evaluation_data_t->flag_loaded_testdata == false) && (evaluation_data_t->flag_loaded_validationdata == false))
+
+  if ((evaluation_data_t->flag_start_evaluation == true) && (evaluation_data_t->flag_loaded_testdata == false) && (evaluation_data_t->flag_loaded_validationdata == false))
   {
-    evaluation_data_t->flag_start_evaluation = false;    
-    sendStatusText("Evaluierung nicht möglich! Keine Daten geladen!");    
+    evaluation_data_t->flag_start_evaluation = false;
+    sendStatusText("Evaluierung nicht möglich! Keine Daten geladen!");
     delay(5000);
     sendSomewhat(PREFIX_EVAL + "_Start_Evaluation", Evaluation_Topic, "false");
   }
-
 
   /********************************************************
     Zyklisch Allgemeine Daten behandeln
@@ -176,7 +175,6 @@ void loop()
       sendStatusText("Armband verbunden --> Betriebsbereit!");
     }
 
-
     if ((evaluation_data_t->flag_load_testdata == false) && (evaluation_data_t->flag_loaded_testdata == false))
     {
       sendSomewhat(PREFIX_EVAL + "_Load_Testdata", Evaluation_Topic, "false");
@@ -191,7 +189,7 @@ void loop()
 
     if (evaluation_data_t->flag_start_classifying == false)
     {
-      sendSomewhat(PREFIX_EVAL + "_Result_Classifier", Evaluation_Topic, "4");      
+      sendSomewhat(PREFIX_EVAL + "_Result_Classifier", Evaluation_Topic, "4");
     }
   }
 
@@ -217,7 +215,7 @@ void loop()
   ********************************************************/
   if ((myo.connected == true) && (myo_control_t->flag_myo_connected == false))
   {
-    //setNeoColor(0, 0, 255); // Blau
+    // setNeoColor(0, 0, 255); // Blau
     myo_control_t->flag_myo_connected = true;
     myo_control_t->flag_connect_bluetooth = false;
   }
@@ -278,13 +276,12 @@ void loop()
     Gesten-Klassifizierung
   ********************************************************/
   if ((evaluation_data_t->flag_start_classifying == true) && (myo.connected == true))
-  {        
-    runClassifier();
+  {
+    classifyingLight();
   }
-    
-  
+
   if ((evaluation_data_t->flag_start_classifying == true) && (myo.connected == false))
-  {    
+  {
     sendSomewhat(PREFIX_EVAL + "_Start_Classifying", Evaluation_Topic, "false");
     sendStatusText("Klassifizierung nicht möglich!");
     delay(5000);

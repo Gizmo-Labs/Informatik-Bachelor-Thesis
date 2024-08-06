@@ -281,7 +281,6 @@ void runTestConfusionMatrix(int rows)
     Serial.println("Macro-Average\t" + String(Macro_Precision) + "\t\t" + String(Macro_Recall) + "\t\t" + String(Macro_f1_score));
 }
 
-
 /********************************************************
     Ausgabe der Konfusions-Matrix für Validierungsdaten
 ********************************************************/
@@ -547,18 +546,21 @@ void runValidationConfusionMatrix(int rows)
     Serial.println("Macro-Average\t" + String(Macro_Precision) + "\t\t" + String(Macro_Recall) + "\t\t" + String(Macro_f1_score));
 }
 
-
 void runClassifier()
 {
-    classifyingLight();
+       
     // Checke ob Vorhersage korrekt ausgeführt wurde
-        if (!tf.predict(data_collecting_t->iBluetoothData).isOk())
-        {
-            Serial.println(tf.exception.toString());
-            return;
-        }
+    if (!tf.predict(data_collecting_t->iBluetoothData).isOk())
+    {
+        Serial.println(tf.exception.toString());
+        return;
+    }
 
-        uint8_t gesture = tf.classification;
+    uint8_t gesture = tf.classification;
 
-        sendSomewhat(PREFIX_EVAL + "_Result_Classifier", Evaluation_Topic, String(gesture));        
+    sendSomewhat(PREFIX_EVAL + "_Result_Classifier", Evaluation_Topic, String(gesture));   
+    Serial.println("Geste : " + String(gesture));
+    
+    
+    delay(1000);
 }

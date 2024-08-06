@@ -70,7 +70,7 @@ void setupISR()
   else if (DEBUG_DATA_COLLECTING)
     Serial.println(F("Can't set ITimer. Select another freq. or timer"));
 
-  if (ITimer1.attachInterruptInterval(TIMER1_INTERVAL_MS * 200, TimerHandler1))
+  if (ITimer1.attachInterruptInterval(TIMER1_INTERVAL_MS * 2000, TimerHandler1))
   {
     if (DEBUG_DATA_COLLECTING)
       Serial.println(F("Starting ITimer 1 OK"));
@@ -169,7 +169,7 @@ void classify_emg_sample(int8_t *sample, size_t len)
   case BEGIN:
 
     // Immer 64 Samples abwarten
-    if (count_samples < 256)
+    if (count_samples < 64)
     {
       for (int i = 0; i < len; i++)
       {
@@ -179,23 +179,17 @@ void classify_emg_sample(int8_t *sample, size_t len)
     }
 
     // Dann erst seriell senden
-    if (count_samples == 256)
+    if (count_samples == 64)
     {
-      // for (int j = 0; j < 64; j++)
-      // {
-      //   Serial.print(data_collecting_t->iBluetoothData[j]);
-      //   // Letzter Datensatz benötigt kein Komma mehr
-      //   if (j < 63)
-      //     Serial.print(",");
-      // }
-      // Serial.println();      
+      runClassifier();
       count_samples = 0;
+      evaluation_data_t->flag_classifying_light = false;
     }
     break;
   // Messintervall beendet --> Ampel aus
   case END:
-    evaluation_data_t->flag_classifying_light = false;
-    data_collecting_t->flag_green_light = false;    
+    //evaluation_data_t->flag_classifying_light = false;
+    //data_collecting_t->flag_green_light = false;    
     ITimer1.stopTimer();
     break;
   // Wenn etwas schiefgeht --> Abbruch
@@ -203,7 +197,7 @@ void classify_emg_sample(int8_t *sample, size_t len)
     sendSomewhat(PREFIX_DATA + "_Start_Collecting", Data_Topic, "false");
     evaluation_data_t->flag_start_classifying = false;
     evaluation_data_t->flag_classifying_light = false;
-    data_collecting_t->flag_green_light = false;
+    //data_collecting_t->flag_green_light = false;
     ITimer1.stopTimer();
     break;
   }

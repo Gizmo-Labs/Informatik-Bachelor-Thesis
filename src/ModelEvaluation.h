@@ -1,7 +1,6 @@
 /********************************************************
   Bibliotheken
 ********************************************************/
-// #include "model.h"
 #include "Model.h"
 #include <tflm_esp32.h>
 #include <eloquent_tinyml.h>

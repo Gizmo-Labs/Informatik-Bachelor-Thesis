@@ -434,6 +434,7 @@ void onMqttMessage(char *topic, char *payload, const AsyncMqttClientMessagePrope
     if (sStartClassifying.indexOf("true") >= 0)
     {      
       evaluation_data_t->flag_start_classifying = true;    
+      evaluation_data_t->flag_classifying_light = true;
     }
     else
     {

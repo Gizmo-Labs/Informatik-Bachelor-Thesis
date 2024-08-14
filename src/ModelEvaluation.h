@@ -17,7 +17,7 @@ void runClassifier();
   Globale Konstanten
 ********************************************************/
 #define ARENA_SIZE 50000
-#define DEBUG_EVALUATION true
+#define DEBUG_EVALUATION false
 #define ROWS_OF_TESTDATA 1000
 #define ROWS_OF_VALIDATIONDATA 500
 #define NUM_OF_CLASSES 3

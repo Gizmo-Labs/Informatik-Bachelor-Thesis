@@ -63,7 +63,7 @@ void trafficLight()
 ********************************************************/
 void classifyingLight()
 {
-  evaluation_data_t->flag_classifying_light = true;
+  //evaluation_data_t->flag_classifying_light = true;
   sendStatusText("Klassifizierung aktiv!");  
   delay(PRE_CLASSIFYING_LIGHT);
   setNeoColor(255, 0, 255); // Magenta

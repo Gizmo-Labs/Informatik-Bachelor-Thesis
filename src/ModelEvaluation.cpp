@@ -15,6 +15,7 @@ MODEL_DATA *model_data_t = (MODEL_DATA *)heap_caps_malloc(sizeof(MODEL_DATA), MA
 EVALUATION_DATA *evaluation_data_t = (EVALUATION_DATA *)heap_caps_malloc(sizeof(EVALUATION_DATA), MALLOC_CAP_SPIRAM);
 
 extern TINYML_DATA *data_collecting_t;
+int classes[10] = {};
 
 /********************************************************
     Ausgabe der Konfusions-Matrix für Testdaten
@@ -75,7 +76,7 @@ void runTestConfusionMatrix(int rows)
         if (((index == 2) && (tf.classification == 2)) || ((index == 3) && (tf.classification == 3)))
         {
             // Wenn Klasse 2 richtigerweise als Klasse 2 erkannt wurde oder
-            // Klasse 3 richtigerweise als Klasse 3 erkannt wurde            
+            // Klasse 3 richtigerweise als Klasse 3 erkannt wurde
             // Dies ist ein True Negative für Klasse 1 [Papier]
             True_Negatives_Class_1 += 1;
         }
@@ -107,7 +108,7 @@ void runTestConfusionMatrix(int rows)
         if (((index == 1) && (tf.classification == 1)) || ((index == 3) && (tf.classification == 3)))
         {
             // Wenn Klasse 1 richtigerweise als Klasse 1 erkannt wurde oder
-            // Klasse 3 richtigerweise als Klasse 3 erkannt wurde            
+            // Klasse 3 richtigerweise als Klasse 3 erkannt wurde
             // Dies ist ein True Negative für Klasse 2 [Stein]
             True_Negatives_Class_2 += 1;
         }
@@ -139,7 +140,7 @@ void runTestConfusionMatrix(int rows)
         if (((index == 1) && (tf.classification == 1)) || ((index == 2) && (tf.classification == 2)))
         {
             // Wenn Klasse 1 richtigerweise als Klasse 1 erkannt wurde oder
-            // Klasse 2 richtigerweise als Klasse 2 erkannt wurde            
+            // Klasse 2 richtigerweise als Klasse 2 erkannt wurde
             // Dies ist ein True Negative für Klasse 3 [Schere]
             True_Negatives_Class_3 += 1;
         }
@@ -157,7 +158,7 @@ void runTestConfusionMatrix(int rows)
             // Dies ist ein False Positive für Geste 3 [Schere]
             False_Negatives_Class_3 += 1;
         }
-        
+
         if (DEBUG_EVALUATION)
         {
             Serial.print("Das hat gedauert --> ");
@@ -195,11 +196,11 @@ void runTestConfusionMatrix(int rows)
     float Precision_1 = ((True_Positives_Class_1 / 1.0f) / (True_Positives_Class_1 + False_Positives_Class_1 / 1.0f));
     float Precision_2 = ((True_Positives_Class_2 / 1.0f) / (True_Positives_Class_2 + False_Positives_Class_2 / 1.0f));
     float Precision_3 = ((True_Positives_Class_3 / 1.0f) / (True_Positives_Class_3 + False_Positives_Class_3 / 1.0f));
-    
+
     float Recall_1 = ((True_Positives_Class_1 / 1.0f) / (True_Positives_Class_1 + False_Negatives_Class_1 / 1.0f));
     float Recall_2 = ((True_Positives_Class_2 / 1.0f) / (True_Positives_Class_2 + False_Negatives_Class_2 / 1.0f));
     float Recall_3 = ((True_Positives_Class_3 / 1.0f) / (True_Positives_Class_3 + False_Negatives_Class_3 / 1.0f));
-    
+
     float Prec_Oben = (True_Positives_Class_1 + True_Positives_Class_2 + True_Positives_Class_3 / 1.0f);
     float Prec_Unten = (True_Positives_Class_1 + False_Positives_Class_1 + True_Positives_Class_2 + False_Positives_Class_2 + True_Positives_Class_3 + False_Positives_Class_3) / 1.0f;
     float Micro_Precision = Prec_Oben / Prec_Unten;
@@ -213,7 +214,7 @@ void runTestConfusionMatrix(int rows)
     float f1_score_1 = 2 * ((Precision_1 * Recall_1) / (Precision_1 + Recall_1));
     float f1_score_2 = 2 * ((Precision_2 * Recall_2) / (Precision_2 + Recall_2));
     float f1_score_3 = 2 * ((Precision_3 * Recall_3) / (Precision_3 + Recall_3));
-    
+
     float Macro_f1_score = 2 * ((Macro_Precision * Macro_Recall) / (Macro_Precision + Macro_Recall));
     float Micro_f1_score = 2 * ((Micro_Precision * Micro_Recall) / (Micro_Precision + Micro_Recall));
 
@@ -221,7 +222,7 @@ void runTestConfusionMatrix(int rows)
     Serial.println();
     Serial.println("Klasse 1\t" + String(Precision_1) + "\t\t" + String(Recall_1) + "\t\t" + String(f1_score_1));
     Serial.println("Klasse 2\t" + String(Precision_2) + "\t\t" + String(Recall_2) + "\t\t" + String(f1_score_2));
-    Serial.println("Klasse 3\t" + String(Precision_3) + "\t\t" + String(Recall_3) + "\t\t" + String(f1_score_3));    
+    Serial.println("Klasse 3\t" + String(Precision_3) + "\t\t" + String(Recall_3) + "\t\t" + String(f1_score_3));
     Serial.println();
     Serial.println("-------------------------------------------------------------");
     Serial.println();
@@ -288,7 +289,7 @@ void runValidationConfusionMatrix(int rows)
         if (((index == 2) && (tf.classification == 2)) || ((index == 3) && (tf.classification == 3)))
         {
             // Wenn Klasse 2 richtigerweise als Klasse 2 erkannt wurde oder
-            // Klasse 3 richtigerweise als Klasse 3 erkannt wurde           
+            // Klasse 3 richtigerweise als Klasse 3 erkannt wurde
             // Dies ist ein True Negative für Klasse 1 [Papier]
             True_Negatives_Class_1 += 1;
         }
@@ -320,7 +321,7 @@ void runValidationConfusionMatrix(int rows)
         if (((index == 1) && (tf.classification == 1)) || ((index == 3) && (tf.classification == 3)))
         {
             // Wenn Klasse 1 richtigerweise als Klasse 1 erkannt wurde oder
-            // Klasse 3 richtigerweise als Klasse 3 erkannt wurde             
+            // Klasse 3 richtigerweise als Klasse 3 erkannt wurde
             // Dies ist ein True Negative für Klasse 2 [Stein]
             True_Negatives_Class_2 += 1;
         }
@@ -352,7 +353,7 @@ void runValidationConfusionMatrix(int rows)
         if (((index == 1) && (tf.classification == 1)) || ((index == 2) && (tf.classification == 2)))
         {
             // Wenn Klasse 1 richtigerweise als Klasse 1 erkannt wurde oder
-            // Klasse 2 richtigerweise als Klasse 2 erkannt wurde            
+            // Klasse 2 richtigerweise als Klasse 2 erkannt wurde
             // Dies ist ein True Negative für Klasse 3 [Schere]
             True_Negatives_Class_3 += 1;
         }
@@ -408,11 +409,11 @@ void runValidationConfusionMatrix(int rows)
     float Precision_1 = ((True_Positives_Class_1 / 1.0f) / (True_Positives_Class_1 + False_Positives_Class_1 / 1.0f));
     float Precision_2 = ((True_Positives_Class_2 / 1.0f) / (True_Positives_Class_2 + False_Positives_Class_2 / 1.0f));
     float Precision_3 = ((True_Positives_Class_3 / 1.0f) / (True_Positives_Class_3 + False_Positives_Class_3 / 1.0f));
-    
+
     float Recall_1 = ((True_Positives_Class_1 / 1.0f) / (True_Positives_Class_1 + False_Negatives_Class_1 / 1.0f));
     float Recall_2 = ((True_Positives_Class_2 / 1.0f) / (True_Positives_Class_2 + False_Negatives_Class_2 / 1.0f));
     float Recall_3 = ((True_Positives_Class_3 / 1.0f) / (True_Positives_Class_3 + False_Negatives_Class_3 / 1.0f));
-    
+
     float Prec_Oben = (True_Positives_Class_1 + True_Positives_Class_2 + True_Positives_Class_3) / 1.0f;
     float Prec_Unten = (True_Positives_Class_1 + False_Positives_Class_1 + True_Positives_Class_2 + False_Positives_Class_2 + True_Positives_Class_3 + False_Positives_Class_3) / 1.0f;
     float Micro_Precision = Prec_Oben / Prec_Unten;
@@ -426,7 +427,7 @@ void runValidationConfusionMatrix(int rows)
     float f1_score_1 = 2 * ((Precision_1 * Recall_1) / (Precision_1 + Recall_1));
     float f1_score_2 = 2 * ((Precision_2 * Recall_2) / (Precision_2 + Recall_2));
     float f1_score_3 = 2 * ((Precision_3 * Recall_3) / (Precision_3 + Recall_3));
-    
+
     float Macro_f1_score = 2 * ((Macro_Precision * Macro_Recall) / (Macro_Precision + Macro_Recall));
     float Micro_f1_score = 2 * ((Micro_Precision * Micro_Recall) / (Micro_Precision + Micro_Recall));
 
@@ -444,19 +445,47 @@ void runValidationConfusionMatrix(int rows)
 
 void runClassifier()
 {
-       
     // Checke ob Vorhersage korrekt ausgeführt wurde
-    if (!tf.predict(data_collecting_t->iBluetoothData).isOk())
+    if (!tf.predict(data_collecting_t->fBluetoothData).isOk())
     {
+        sendSomewhat(PREFIX_EVAL + "_Result_Classifier", Evaluation_Topic, "4");
         Serial.println(tf.exception.toString());
+        delay(1000);
         return;
     }
 
-    uint8_t gesture = tf.classification;
+    if (data_collecting_t->iCount_Classifications < 10)
+    {
+        classes[data_collecting_t->iCount_Classifications] = tf.classification;
+        data_collecting_t->iCount_Classifications++;
+    }
 
-    sendSomewhat(PREFIX_EVAL + "_Result_Classifier", Evaluation_Topic, String(gesture));   
-    Serial.println("Geste : " + String(gesture));
-    
-    
-    delay(1000);
+    if (data_collecting_t->iCount_Classifications == 10)
+    {
+        size_t i, j, count;
+        size_t most = 0;
+        int temp, elem;
+
+        for (i = 0; i < 10; i++)
+        {
+            temp = classes[i];
+            count = 1;
+            for (j = i + 1; j < 10; j++)
+            {
+                if (classes[j] == temp)
+                {
+                    count++;
+                }
+            }
+            if (most < count)
+            {
+                most = count;
+                elem = classes[i];
+            }
+        }
+
+        sendSomewhat(PREFIX_EVAL + "_Result_Classifier", Evaluation_Topic, String(elem));
+        // Serial.println("Geste : " + String(elem));
+        data_collecting_t->iCount_Classifications = 0;
+    }
 }

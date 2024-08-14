@@ -17,7 +17,7 @@ void setupISR();
   - Timer Intervall in Millisekunden !!
 ********************************************************/
 #define DEBUG_DATA_COLLECTING false
-#define GESTURES 8
+#define GESTURES 3
 
 #define TIMER0_INTERVAL_MS 2000L
 #define TIMER1_INTERVAL_MS 1000L
@@ -52,8 +52,10 @@ typedef struct
   uint8_t iRepetitions;
   uint8_t iRepetitions_done;
   uint8_t iSamples;
+  uint8_t iClassified;
+  int iCount_Classifications;
   uint32_t iDatapoints[GESTURES];
-  int8_t iBluetoothData[64];  
+  float fBluetoothData[64];  
 } TINYML_DATA;
 
 

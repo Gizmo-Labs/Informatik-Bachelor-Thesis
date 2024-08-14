@@ -85,15 +85,15 @@ void setup()
     Serial.println("Dateisystem erfolgreich erstellt!");
   }
 
-    // configure input/output
-    tf.setNumInputs(TF_NUM_INPUTS);
-    tf.setNumOutputs(TF_NUM_OUTPUTS);
+  // configure input/output
+  tf.setNumInputs(TF_NUM_INPUTS);
+  tf.setNumOutputs(TF_NUM_OUTPUTS);
 
-    // // this is defined in model.h
-    registerNetworkOps(tf);
+  // // this is defined in model.h
+  registerNetworkOps(tf);
 
-    while (!tf.begin(tfModel).isOk())
-      Serial.println(tf.exception.toString());
+  while (!tf.begin(tfModel).isOk())
+    Serial.println(tf.exception.toString());
 }
 
 void loop()
@@ -177,7 +177,8 @@ void loop()
     {
       sendStatusText("System bereit --> wartet auf Armband!");
     }
-    else if ((myo.connected == true) && (data_collecting_t->flag_traffic_light == false) && (evaluation_data_t->flag_start_classifying == false))
+
+    if ((myo.connected == true) && (data_collecting_t->flag_traffic_light == false) && (evaluation_data_t->flag_start_classifying == false))
     {
       sendStatusText("Armband verbunden --> Betriebsbereit!");
     }
@@ -221,31 +222,35 @@ void loop()
     Armband ist verbunden und war es vorher nicht
   ********************************************************/
   if ((myo.connected == true) && (myo_control_t->flag_myo_connected == false))
-  {    
+  {
     myo_control_t->flag_myo_connected = true;
     myo_control_t->flag_connect_bluetooth = false;
   }
+
   /********************************************************
     Armband ist verbunden und kein Data-Collecting
   ********************************************************/
-  else if ((myo.connected == true) && (data_collecting_t->flag_traffic_light == false) && (evaluation_data_t->flag_classifying_light == false))
+  if ((myo.connected == true) && (data_collecting_t->flag_traffic_light == false) 
+  && (evaluation_data_t->flag_classifying_light == false) && (evaluation_data_t->flag_start_classifying == false))
   {
     setNeoColor(0, 0, 255); // Blau
   }
+
   /********************************************************
     Armband ist nicht verbunden und war es vorher
   ********************************************************/
-  else if ((myo.connected == false) && (myo_control_t->flag_myo_connected == true))
+  if ((myo.connected == false) && (myo_control_t->flag_myo_connected == true))
   {
     sendStatusText("Myo-Armband getrennt!");
     setNeoColor(255, 0, 0); // Rot
     myo_control_t->flag_myo_connected = false;
     data_collecting_t->flag_start_collecting = false;
   }
+
   /********************************************************
     Armband ist nicht verbunden und war es vorher nicht
   ********************************************************/
-  else if ((myo.connected == false) && (myo_control_t->flag_myo_connected == false) && (myo_control_t->flag_connect_bluetooth == false))
+  if ((myo.connected == false) && (myo_control_t->flag_myo_connected == false) && (myo_control_t->flag_connect_bluetooth == false))
   {
     setNeoColor(255, 0, 0); // Rot
   }
@@ -281,7 +286,7 @@ void loop()
   /********************************************************
     Gesten-Klassifizierung
   ********************************************************/
-  if ((evaluation_data_t->flag_start_classifying == true) && (myo.connected == true))
+  if ((evaluation_data_t->flag_start_classifying == true) && (myo.connected == true) && (evaluation_data_t->flag_classifying_light == false))
   {
     classifyingLight();
   }

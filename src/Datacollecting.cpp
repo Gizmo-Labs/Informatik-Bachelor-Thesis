@@ -70,7 +70,7 @@ void setupISR()
   else if (DEBUG_DATA_COLLECTING)
     Serial.println(F("Can't set ITimer. Select another freq. or timer"));
 
-  if (ITimer1.attachInterruptInterval(TIMER1_INTERVAL_MS * 2000, TimerHandler1))
+  if (ITimer1.attachInterruptInterval(TIMER1_INTERVAL_MS * 100, TimerHandler1))
   {
     if (DEBUG_DATA_COLLECTING)
       Serial.println(F("Starting ITimer 1 OK"));
@@ -78,7 +78,6 @@ void setupISR()
   else if (DEBUG_DATA_COLLECTING)
     Serial.println(F("Can't set ITimer. Select another freq. or timer"));
 }
-
 
 /********************************************************
   Lese EMG-Rohdaten ein
@@ -107,7 +106,7 @@ void write_emg_sample(int8_t *sample, size_t len)
     {
       for (int i = 0; i < len; i++)
       {
-        data_collecting_t->iBluetoothData[count_samples] = sample[i];
+        data_collecting_t->fBluetoothData[count_samples] = sample[i];
         count_samples++;
       }
     }
@@ -117,7 +116,7 @@ void write_emg_sample(int8_t *sample, size_t len)
     {
       for (int j = 0; j < 64; j++)
       {
-        Serial.print(data_collecting_t->iBluetoothData[j]);
+        Serial.print(data_collecting_t->fBluetoothData[j]);
         // Letzter Datensatz benötigt kein Komma mehr
         if (j < 63)
           Serial.print(",");
@@ -145,7 +144,6 @@ void write_emg_sample(int8_t *sample, size_t len)
   }
 }
 
-
 /********************************************************
   Lese EMG-Rohdaten ein
 ********************************************************/
@@ -158,7 +156,7 @@ void classify_emg_sample(int8_t *sample, size_t len)
   // Falls seit letzem Zyklus eine Änderung aufgetreten ist...
   if (data_collecting_t->flag_capture_old != data_collecting_t->flag_capture_new)
   {
-    data_collecting_t->flag_capture_old = data_collecting_t->flag_capture_new;
+    data_collecting_t->flag_capture_old = data_collecting_t->flag_capture_new;    
     ITimer1.restartTimer();
     ICounter1 = 0;
   }
@@ -173,23 +171,38 @@ void classify_emg_sample(int8_t *sample, size_t len)
     {
       for (int i = 0; i < len; i++)
       {
-        data_collecting_t->iBluetoothData[count_samples] = sample[i];
+        data_collecting_t->fBluetoothData[count_samples] = sample[i];
         count_samples++;
       }
     }
 
-    // Dann erst seriell senden
-    if (count_samples == 64)
+    if (evaluation_data_t->flag_classifying_light == true)
     {
-      runClassifier();
-      count_samples = 0;
-      evaluation_data_t->flag_classifying_light = false;
+      // Dann erst seriell senden
+      if (count_samples == 64)
+      {
+        if (DEBUG_DATA_COLLECTING == true)
+        {
+          for (int j = 0; j < 64; j++)
+          {
+
+            Serial.print(data_collecting_t->fBluetoothData[j]);
+            // Letzter Datensatz benötigt kein Komma mehr
+            if (j < 63)
+              Serial.print(",");
+          }
+          Serial.println();
+        }
+        runClassifier();
+        count_samples = 0;
+        evaluation_data_t->flag_classifying_light = false;
+      }
     }
     break;
   // Messintervall beendet --> Ampel aus
   case END:
-    //evaluation_data_t->flag_classifying_light = false;
-    //data_collecting_t->flag_green_light = false;    
+    evaluation_data_t->flag_classifying_light = true;
+    ICounter1 = 0;
     ITimer1.stopTimer();
     break;
   // Wenn etwas schiefgeht --> Abbruch
@@ -197,12 +210,11 @@ void classify_emg_sample(int8_t *sample, size_t len)
     sendSomewhat(PREFIX_DATA + "_Start_Collecting", Data_Topic, "false");
     evaluation_data_t->flag_start_classifying = false;
     evaluation_data_t->flag_classifying_light = false;
-    //data_collecting_t->flag_green_light = false;
+    data_collecting_t->flag_green_light = false;
     ITimer1.stopTimer();
     break;
   }
 }
-
 
 /********************************************************
   Callback-Funktion für EMG-Signale

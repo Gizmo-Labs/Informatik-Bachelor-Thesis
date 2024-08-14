@@ -66,12 +66,12 @@ void setup()
   evaluation_data_t = new EVALUATION_DATA();
 
   /********************************************************
-    RGB-LED initialisieren
+     RGB-LED initialisieren
   ********************************************************/
   initNeo();
 
   /********************************************************
-    MQTT initialisieren
+     MQTT initialisieren
   ********************************************************/
   initMqtt();
 
@@ -85,8 +85,15 @@ void setup()
     Serial.println("Dateisystem erfolgreich erstellt!");
   }
 
-  while (!tf.begin(FCNN).isOk())
-    Serial.println(tf.exception.toString());
+    // configure input/output
+    tf.setNumInputs(TF_NUM_INPUTS);
+    tf.setNumOutputs(TF_NUM_OUTPUTS);
+
+    // // this is defined in model.h
+    registerNetworkOps(tf);
+
+    while (!tf.begin(tfModel).isOk())
+      Serial.println(tf.exception.toString());
 }
 
 void loop()
@@ -135,7 +142,7 @@ void loop()
   if ((evaluation_data_t->flag_start_evaluation == true) && ((evaluation_data_t->flag_loaded_testdata == true) || (evaluation_data_t->flag_loaded_validationdata == true)))
   {
     evaluation_data_t->flag_start_evaluation = false;
-    runTestConfusionMatrix(ROWS_OF_TESTDATA);
+    runValidationConfusionMatrix(ROWS_OF_VALIDATIONDATA);
     sendSomewhat(PREFIX_EVAL + "_Start_Evaluation", Evaluation_Topic, "false");
   }
 
@@ -214,8 +221,7 @@ void loop()
     Armband ist verbunden und war es vorher nicht
   ********************************************************/
   if ((myo.connected == true) && (myo_control_t->flag_myo_connected == false))
-  {
-    // setNeoColor(0, 0, 255); // Blau
+  {    
     myo_control_t->flag_myo_connected = true;
     myo_control_t->flag_connect_bluetooth = false;
   }

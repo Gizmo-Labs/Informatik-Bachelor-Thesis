@@ -21,9 +21,9 @@ extern TINYML_DATA *data_collecting_t;
 ********************************************************/
 void runTestConfusionMatrix(int rows)
 {
-    const int N = 4;
+    const int N = 3;
     int i = 0;
-    int A[4];
+    int A[3];
 
     int True_Positives_Class_1 = 0;
     int True_Negatives_Class_1 = 0;
@@ -40,11 +40,6 @@ void runTestConfusionMatrix(int rows)
     int False_Positives_Class_3 = 0;
     int False_Negatives_Class_3 = 0;
 
-    int True_Positives_Class_4 = 0;
-    int True_Negatives_Class_4 = 0;
-    int False_Positives_Class_4 = 0;
-    int False_Negatives_Class_4 = 0;
-
     for (i = 0; i < rows; i++)
     {
         // Checke ob Vorhersage korrekt ausgeführt wurde
@@ -55,7 +50,7 @@ void runTestConfusionMatrix(int rows)
         }
 
         // Ermitteln des korrekten Labels aus dem Struct
-        for (int j = 0; j < 4; j++)
+        for (int j = 0; j < N; j++)
         {
             A[j] = model_data_t->iTest_Label[i][j];
         }
@@ -68,73 +63,71 @@ void runTestConfusionMatrix(int rows)
         tf.classification += 1;
 
         /********************************************************
-          Auswertungen von Klasse 1 (Geballte Faust)
+          Auswertungen von Klasse 1 (Papier)
         ********************************************************/
         if ((index == 1) && (tf.classification == 1))
         {
             // Wenn Klasse 1 richtigerweise als Klasse 1 erkannt wurde
-            // Dies ist ein True Positive für Klasse 1 [Geballte Faust]
+            // Dies ist ein True Positive für Klasse 1 [Papier]
             True_Positives_Class_1 += 1;
         }
 
-        if (((index == 2) && (tf.classification == 2)) || ((index == 3) && (tf.classification == 3)) || ((index == 4) && (tf.classification == 4)))
+        if (((index == 2) && (tf.classification == 2)) || ((index == 3) && (tf.classification == 3)))
         {
             // Wenn Klasse 2 richtigerweise als Klasse 2 erkannt wurde oder
-            // Klasse 3 richtigerweise als Klasse 3 erkannt wurde oder
-            // Klasse 4 richtigerweise als Klasse 4 erkannt wurde
-            // Dies ist ein True Negative für Klasse 1 [Geballte Faust]
+            // Klasse 3 richtigerweise als Klasse 3 erkannt wurde            
+            // Dies ist ein True Negative für Klasse 1 [Papier]
             True_Negatives_Class_1 += 1;
         }
 
-        if (((index == 2) || (index == 3) || (index == 4)) && (tf.classification == 1))
+        if (((index == 2) || (index == 3)) && (tf.classification == 1))
         {
-            // Wenn Klasse 2,3 oder 4 fälschlicherweise als Klasse 1 erkannt wurden
-            // Dies ist ein False Positive für Geste 1 [Geballte Faust]
+            // Wenn Klasse 2 oder 3 fälschlicherweise als Klasse 1 erkannt wurden
+            // Dies ist ein False Positive für Geste 1 [Papier]
             False_Positives_Class_1 += 1;
         }
 
-        if ((index == 1) && ((tf.classification == 2) || (tf.classification == 3) || (tf.classification == 4)))
+        if ((index == 1) && ((tf.classification == 2) || (tf.classification == 3)))
         {
-            // Wenn Klasse 1 korrekt aber fälschlicherweise als Klasse 2, 3 oder 4 erkannt
-            // Dies ist ein False Positive für Geste 1 [Geballte Faust]
+            // Wenn Klasse 1 korrekt aber fälschlicherweise als Klasse 2 oder 3 erkannt
+            // Dies ist ein False Positive für Geste 1 [Papier]
             False_Negatives_Class_1 += 1;
         }
 
         /********************************************************
-          Auswertungen von Klasse 2 (Daumen hoch)
+          Auswertungen von Klasse 2 (Stein)
         ********************************************************/
         if ((index == 2) && (tf.classification == 2))
         {
             // Wenn Klasse 2 richtigerweise als Klasse 2 erkannt wurde
-            // Dies ist ein True Positive für Klasse 2 [Daumen hoch]
+            // Dies ist ein True Positive für Klasse 2 [Stein]
             True_Positives_Class_2 += 1;
         }
 
-        if (((index == 1) && (tf.classification == 1)) || ((index == 3) && (tf.classification == 3)) || ((index == 4) && (tf.classification == 4)))
+        if (((index == 1) && (tf.classification == 1)) || ((index == 3) && (tf.classification == 3)))
         {
             // Wenn Klasse 1 richtigerweise als Klasse 1 erkannt wurde oder
-            // Klasse 3 richtigerweise als Klasse 3 erkannt wurde oder
-            // Klasse 4 richtigerweise als Klasse 4 erkannt wurde
-            // Dies ist ein True Negative für Klasse 2 [Daumen hoch]
+            // Klasse 3 richtigerweise als Klasse 3 erkannt wurde            
+            // Dies ist ein True Negative für Klasse 2 [Stein]
             True_Negatives_Class_2 += 1;
         }
 
-        if (((index == 1) || (index == 3) || (index == 4)) && (tf.classification == 2))
+        if (((index == 1) || (index == 3)) && (tf.classification == 2))
         {
-            // Wenn Klasse 1,3 oder 4 fälschlicherweise als Klasse 2 erkannt wurden
-            // Dies ist ein False Positive für Geste 2 [Daumen hoch]
+            // Wenn Klasse 1 oder 3 fälschlicherweise als Klasse 2 erkannt wurden
+            // Dies ist ein False Positive für Geste 2 [Stein]
             False_Positives_Class_2 += 1;
         }
 
-        if ((index == 2) && ((tf.classification == 1) || (tf.classification == 3) || (tf.classification == 4)))
+        if ((index == 2) && ((tf.classification == 1) || (tf.classification == 3)))
         {
-            // Wenn Klasse 2 korrekt aber fälschlicherweise als Klasse 1, 3 oder 4 erkannt
-            // Dies ist ein False Positive für Geste 2 [Daumen hoch]
+            // Wenn Klasse 2 korrekt aber fälschlicherweise als Klasse 1 oder 3 erkannt
+            // Dies ist ein False Positive für Geste 2 [Stein]
             False_Negatives_Class_2 += 1;
         }
 
         /********************************************************
-          Auswertungen von Klasse 3 (Zeige- und Mittelfinger)
+          Auswertungen von Klasse 3 (Schere)
         ********************************************************/
         if ((index == 3) && (tf.classification == 3))
         {
@@ -143,62 +136,28 @@ void runTestConfusionMatrix(int rows)
             True_Positives_Class_3 += 1;
         }
 
-        if (((index == 1) && (tf.classification == 1)) || ((index == 2) && (tf.classification == 2)) || ((index == 4) && (tf.classification == 4)))
+        if (((index == 1) && (tf.classification == 1)) || ((index == 2) && (tf.classification == 2)))
         {
             // Wenn Klasse 1 richtigerweise als Klasse 1 erkannt wurde oder
-            // Klasse 2 richtigerweise als Klasse 2 erkannt wurde oder
-            // Klasse 4 richtigerweise als Klasse 4 erkannt wurde
-            // Dies ist ein True Negative für Klasse 3 [Zeige- und Mittelfinger]
+            // Klasse 2 richtigerweise als Klasse 2 erkannt wurde            
+            // Dies ist ein True Negative für Klasse 3 [Schere]
             True_Negatives_Class_3 += 1;
         }
 
-        if (((index == 1) || (index == 2) || (index == 4)) && (tf.classification == 3))
+        if (((index == 1) || (index == 2)) && (tf.classification == 3))
         {
-            // Wenn Klasse 1,2 oder 4 fälschlicherweise als Klasse 3 erkannt wurden
-            // Dies ist ein False Positive für Geste 3 [Zeige- und Mittelfinger]
+            // Wenn Klasse 1 oder 2 fälschlicherweise als Klasse 3 erkannt wurden
+            // Dies ist ein False Positive für Geste 3 [Schere]
             False_Positives_Class_3 += 1;
         }
 
-        if ((index == 3) && ((tf.classification == 2) || (tf.classification == 3) || (tf.classification == 4)))
+        if ((index == 3) && ((tf.classification == 2) || (tf.classification == 1)))
         {
-            // Wenn Klasse 3 korrekt aber fälschlicherweise als Klasse 2, 3 oder 4 erkannt
-            // Dies ist ein False Positive für Geste 3 [Zeige- und Mittelfinger]
+            // Wenn Klasse 3 korrekt aber fälschlicherweise als Klasse 2 oder 1 erkannt
+            // Dies ist ein False Positive für Geste 3 [Schere]
             False_Negatives_Class_3 += 1;
         }
-
-        /********************************************************
-          Auswertungen von Klasse 4 (Alle Finger)
-        ********************************************************/
-        if ((index == 4) && (tf.classification == 4))
-        {
-            // Wenn Klasse 4 richtigerweise als Klasse 4 erkannt wurde
-            // Dies ist ein True Positive für Klasse 4 [Alle Finger]
-            True_Positives_Class_4 += 1;
-        }
-
-        if (((index == 1) && (tf.classification == 1)) || ((index == 2) && (tf.classification == 2)) || ((index == 3) && (tf.classification == 3)))
-        {
-            // Wenn Klasse 1 richtigerweise als Klasse 1 erkannt wurde oder
-            // Klasse 2 richtigerweise als Klasse 2 erkannt wurde oder
-            // Klasse 3 richtigerweise als Klasse 3 erkannt wurde
-            // Dies ist ein True Negative für Klasse 4 [Zeige- und Mittelfinger]
-            True_Negatives_Class_4 += 1;
-        }
-
-        if (((index == 1) || (index == 2) || (index == 3)) && (tf.classification == 4))
-        {
-            // Wenn Klasse 1,2 oder 3 fälschlicherweise als Klasse 4 erkannt wurden
-            // Dies ist ein False Positive für Geste 4 [Zeige- und Mittelfinger]
-            False_Positives_Class_4 += 1;
-        }
-
-        if ((index == 4) && ((tf.classification == 1) || (tf.classification == 2) || (tf.classification == 3)))
-        {
-            // Wenn Klasse 4 korrekt aber fälschlicherweise als Klasse 1, 2 oder 3 erkannt
-            // Dies ist ein False Positive für Geste 4 [Zeige- und Mittelfinger]
-            False_Negatives_Class_4 += 1;
-        }
-
+        
         if (DEBUG_EVALUATION)
         {
             Serial.print("Das hat gedauert --> ");
@@ -229,13 +188,6 @@ void runTestConfusionMatrix(int rows)
     Serial.println();
     Serial.println("-------------------------------------------------------------");
     Serial.println();
-    Serial.println("True Positives von Geste 4 : " + String(True_Positives_Class_4));
-    Serial.println("False Positives von Geste 4 : " + String(False_Positives_Class_4));
-    Serial.println("True Negatives von Geste 4 : " + String(True_Negatives_Class_4));
-    Serial.println("False Negatives von Geste 4 : " + String(False_Negatives_Class_4));
-    Serial.println();
-    Serial.println("-------------------------------------------------------------");
-    Serial.println();
 
     /********************************************************
         Precision und Recall gemäß Micro-Averaging
@@ -243,28 +195,25 @@ void runTestConfusionMatrix(int rows)
     float Precision_1 = ((True_Positives_Class_1 / 1.0f) / (True_Positives_Class_1 + False_Positives_Class_1 / 1.0f));
     float Precision_2 = ((True_Positives_Class_2 / 1.0f) / (True_Positives_Class_2 + False_Positives_Class_2 / 1.0f));
     float Precision_3 = ((True_Positives_Class_3 / 1.0f) / (True_Positives_Class_3 + False_Positives_Class_3 / 1.0f));
-    float Precision_4 = ((True_Positives_Class_4 / 1.0f) / (True_Positives_Class_4 + False_Positives_Class_4 / 1.0f));
-
+    
     float Recall_1 = ((True_Positives_Class_1 / 1.0f) / (True_Positives_Class_1 + False_Negatives_Class_1 / 1.0f));
     float Recall_2 = ((True_Positives_Class_2 / 1.0f) / (True_Positives_Class_2 + False_Negatives_Class_2 / 1.0f));
     float Recall_3 = ((True_Positives_Class_3 / 1.0f) / (True_Positives_Class_3 + False_Negatives_Class_3 / 1.0f));
-    float Recall_4 = ((True_Positives_Class_4 / 1.0f) / (True_Positives_Class_4 + False_Negatives_Class_4 / 1.0f));
-
-    float Prec_Oben = (True_Positives_Class_1 + True_Positives_Class_2 + True_Positives_Class_3 + True_Positives_Class_4) / 1.0f;
-    float Prec_Unten = (True_Positives_Class_1 + False_Positives_Class_1 + True_Positives_Class_2 + False_Positives_Class_2 + True_Positives_Class_3 + False_Positives_Class_3 + True_Positives_Class_4 + False_Positives_Class_4) / 1.0f;
+    
+    float Prec_Oben = (True_Positives_Class_1 + True_Positives_Class_2 + True_Positives_Class_3 / 1.0f);
+    float Prec_Unten = (True_Positives_Class_1 + False_Positives_Class_1 + True_Positives_Class_2 + False_Positives_Class_2 + True_Positives_Class_3 + False_Positives_Class_3) / 1.0f;
     float Micro_Precision = Prec_Oben / Prec_Unten;
 
-    float Recall_Unten = (True_Positives_Class_1 + False_Negatives_Class_1 + True_Positives_Class_2 + False_Negatives_Class_2 + True_Positives_Class_3 + False_Negatives_Class_3 + True_Positives_Class_4 + False_Negatives_Class_4) / 1.0f;
+    float Recall_Unten = (True_Positives_Class_1 + False_Negatives_Class_1 + True_Positives_Class_2 + False_Negatives_Class_2 + True_Positives_Class_3 + False_Negatives_Class_3) / 1.0f;
     float Micro_Recall = Prec_Oben / Recall_Unten;
 
-    float Macro_Precision = (Precision_1 + Precision_2 + Precision_3 + Precision_4 / 1.0f) / 4;
-    float Macro_Recall = (Recall_1 + Recall_2 + Recall_3 + Recall_4 / 1.0f) / 4;
+    float Macro_Precision = (Precision_1 + Precision_2 + Precision_3 / 1.0f) / 3;
+    float Macro_Recall = (Recall_1 + Recall_2 + Recall_3 / 1.0f) / 3;
 
     float f1_score_1 = 2 * ((Precision_1 * Recall_1) / (Precision_1 + Recall_1));
     float f1_score_2 = 2 * ((Precision_2 * Recall_2) / (Precision_2 + Recall_2));
     float f1_score_3 = 2 * ((Precision_3 * Recall_3) / (Precision_3 + Recall_3));
-    float f1_score_4 = 2 * ((Precision_4 * Recall_4) / (Precision_4 + Recall_4));
-
+    
     float Macro_f1_score = 2 * ((Macro_Precision * Macro_Recall) / (Macro_Precision + Macro_Recall));
     float Micro_f1_score = 2 * ((Micro_Precision * Micro_Recall) / (Micro_Precision + Micro_Recall));
 
@@ -272,8 +221,7 @@ void runTestConfusionMatrix(int rows)
     Serial.println();
     Serial.println("Klasse 1\t" + String(Precision_1) + "\t\t" + String(Recall_1) + "\t\t" + String(f1_score_1));
     Serial.println("Klasse 2\t" + String(Precision_2) + "\t\t" + String(Recall_2) + "\t\t" + String(f1_score_2));
-    Serial.println("Klasse 3\t" + String(Precision_3) + "\t\t" + String(Recall_3) + "\t\t" + String(f1_score_3));
-    Serial.println("Klasse 4\t" + String(Precision_4) + "\t\t" + String(Recall_4) + "\t\t" + String(f1_score_4));
+    Serial.println("Klasse 3\t" + String(Precision_3) + "\t\t" + String(Recall_3) + "\t\t" + String(f1_score_3));    
     Serial.println();
     Serial.println("-------------------------------------------------------------");
     Serial.println();
@@ -286,9 +234,9 @@ void runTestConfusionMatrix(int rows)
 ********************************************************/
 void runValidationConfusionMatrix(int rows)
 {
-    const int N = 4;
+    const int N = 3;
     int i = 0;
-    int A[4];
+    int A[3];
 
     int True_Positives_Class_1 = 0;
     int True_Negatives_Class_1 = 0;
@@ -305,11 +253,6 @@ void runValidationConfusionMatrix(int rows)
     int False_Positives_Class_3 = 0;
     int False_Negatives_Class_3 = 0;
 
-    int True_Positives_Class_4 = 0;
-    int True_Negatives_Class_4 = 0;
-    int False_Positives_Class_4 = 0;
-    int False_Negatives_Class_4 = 0;
-
     for (i = 0; i < rows; i++)
     {
         // Checke ob Vorhersage korrekt ausgeführt wurde
@@ -320,7 +263,7 @@ void runValidationConfusionMatrix(int rows)
         }
 
         // Ermitteln des korrekten Labels aus dem Struct
-        for (int j = 0; j < 4; j++)
+        for (int j = 0; j < N; j++)
         {
             A[j] = model_data_t->iValidation_Label[i][j];
         }
@@ -333,135 +276,99 @@ void runValidationConfusionMatrix(int rows)
         tf.classification += 1;
 
         /********************************************************
-          Auswertungen von Klasse 1 (Geballte Faust)
+          Auswertungen von Klasse 1 (Papier)
         ********************************************************/
         if ((index == 1) && (tf.classification == 1))
         {
             // Wenn Klasse 1 richtigerweise als Klasse 1 erkannt wurde
-            // Dies ist ein True Positive für Klasse 1 [Geballte Faust]
+            // Dies ist ein True Positive für Klasse 1 [Papier]
             True_Positives_Class_1 += 1;
         }
 
-        if (((index == 2) && (tf.classification == 2)) || ((index == 3) && (tf.classification == 3)) || ((index == 4) && (tf.classification == 4)))
+        if (((index == 2) && (tf.classification == 2)) || ((index == 3) && (tf.classification == 3)))
         {
             // Wenn Klasse 2 richtigerweise als Klasse 2 erkannt wurde oder
-            // Klasse 3 richtigerweise als Klasse 3 erkannt wurde oder
-            // Klasse 4 richtigerweise als Klasse 4 erkannt wurde
-            // Dies ist ein True Negative für Klasse 1 [Geballte Faust]
+            // Klasse 3 richtigerweise als Klasse 3 erkannt wurde           
+            // Dies ist ein True Negative für Klasse 1 [Papier]
             True_Negatives_Class_1 += 1;
         }
 
-        if (((index == 2) || (index == 3) || (index == 4)) && (tf.classification == 1))
+        if (((index == 2) || (index == 3)) && (tf.classification == 1))
         {
-            // Wenn Klasse 2,3 oder 4 fälschlicherweise als Klasse 1 erkannt wurden
-            // Dies ist ein False Positive für Geste 1 [Geballte Faust]
+            // Wenn Klasse 2 oder 3 fälschlicherweise als Klasse 1 erkannt wurden
+            // Dies ist ein False Positive für Geste 1 [Papier]
             False_Positives_Class_1 += 1;
         }
 
-        if ((index == 1) && ((tf.classification == 2) || (tf.classification == 3) || (tf.classification == 4)))
+        if ((index == 1) && ((tf.classification == 2) || (tf.classification == 3)))
         {
-            // Wenn Klasse 1 korrekt aber fälschlicherweise als Klasse 2, 3 oder 4 erkannt
-            // Dies ist ein False Positive für Geste 1 [Geballte Faust]
+            // Wenn Klasse 1 korrekt aber fälschlicherweise als Klasse 2 oder 3 erkannt
+            // Dies ist ein False Positive für Geste 1 [Papier]
             False_Negatives_Class_1 += 1;
         }
 
         /********************************************************
-          Auswertungen von Klasse 2 (Daumen hoch)
+          Auswertungen von Klasse 2 (Stein)
         ********************************************************/
         if ((index == 2) && (tf.classification == 2))
         {
             // Wenn Klasse 2 richtigerweise als Klasse 2 erkannt wurde
-            // Dies ist ein True Positive für Klasse 2 [Daumen hoch]
+            // Dies ist ein True Positive für Klasse 2 [Stein]
             True_Positives_Class_2 += 1;
         }
 
-        if (((index == 1) && (tf.classification == 1)) || ((index == 3) && (tf.classification == 3)) || ((index == 4) && (tf.classification == 4)))
+        if (((index == 1) && (tf.classification == 1)) || ((index == 3) && (tf.classification == 3)))
         {
             // Wenn Klasse 1 richtigerweise als Klasse 1 erkannt wurde oder
-            // Klasse 3 richtigerweise als Klasse 3 erkannt wurde oder
-            // Klasse 4 richtigerweise als Klasse 4 erkannt wurde
-            // Dies ist ein True Negative für Klasse 2 [Daumen hoch]
+            // Klasse 3 richtigerweise als Klasse 3 erkannt wurde             
+            // Dies ist ein True Negative für Klasse 2 [Stein]
             True_Negatives_Class_2 += 1;
         }
 
-        if (((index == 1) || (index == 3) || (index == 4)) && (tf.classification == 2))
+        if (((index == 1) || (index == 3)) && (tf.classification == 2))
         {
-            // Wenn Klasse 1,3 oder 4 fälschlicherweise als Klasse 2 erkannt wurden
-            // Dies ist ein False Positive für Geste 2 [Daumen hoch]
+            // Wenn Klasse 1 oder 3 fälschlicherweise als Klasse 2 erkannt wurden
+            // Dies ist ein False Positive für Geste 2 [Stein]
             False_Positives_Class_2 += 1;
         }
 
-        if ((index == 2) && ((tf.classification == 1) || (tf.classification == 3) || (tf.classification == 4)))
+        if ((index == 2) && ((tf.classification == 1) || (tf.classification == 3)))
         {
-            // Wenn Klasse 2 korrekt aber fälschlicherweise als Klasse 1, 3 oder 4 erkannt
-            // Dies ist ein False Positive für Geste 2 [Daumen hoch]
+            // Wenn Klasse 2 korrekt aber fälschlicherweise als Klasse 1 oder 3 erkannt
+            // Dies ist ein False Positive für Geste 2 [Stein]
             False_Negatives_Class_2 += 1;
         }
 
         /********************************************************
-          Auswertungen von Klasse 3 (Zeige- und Mittelfinger)
+          Auswertungen von Klasse 3 (Schere)
         ********************************************************/
         if ((index == 3) && (tf.classification == 3))
         {
             // Wenn Klasse 3 richtigerweise als Klasse 3 erkannt wurde
-            // Dies ist ein True Positive für Klasse 3 [Zeige- und Mittelfinger]
+            // Dies ist ein True Positive für Klasse 3 [Schere]
             True_Positives_Class_3 += 1;
         }
 
-        if (((index == 1) && (tf.classification == 1)) || ((index == 2) && (tf.classification == 2)) || ((index == 4) && (tf.classification == 4)))
+        if (((index == 1) && (tf.classification == 1)) || ((index == 2) && (tf.classification == 2)))
         {
             // Wenn Klasse 1 richtigerweise als Klasse 1 erkannt wurde oder
-            // Klasse 2 richtigerweise als Klasse 2 erkannt wurde oder
-            // Klasse 4 richtigerweise als Klasse 4 erkannt wurde
-            // Dies ist ein True Negative für Klasse 3 [Zeige- und Mittelfinger]
+            // Klasse 2 richtigerweise als Klasse 2 erkannt wurde            
+            // Dies ist ein True Negative für Klasse 3 [Schere]
             True_Negatives_Class_3 += 1;
         }
 
-        if (((index == 1) || (index == 2) || (index == 4)) && (tf.classification == 3))
+        if (((index == 1) || (index == 2)) && (tf.classification == 3))
         {
-            // Wenn Klasse 1,2 oder 4 fälschlicherweise als Klasse 3 erkannt wurden
-            // Dies ist ein False Positive für Geste 3 [Zeige- und Mittelfinger]
+            // Wenn Klasse 1 oder 2 fälschlicherweise als Klasse 3 erkannt wurden
+            // Dies ist ein False Positive für Geste 3 [Schere]
             False_Positives_Class_3 += 1;
         }
 
-        if ((index == 3) && ((tf.classification == 2) || (tf.classification == 3) || (tf.classification == 4)))
+        if ((index == 3) && ((tf.classification == 2) || (tf.classification == 1)))
         {
-            // Wenn Klasse 3 korrekt aber fälschlicherweise als Klasse 2, 3 oder 4 erkannt
-            // Dies ist ein False Positive für Geste 3 [Zeige- und Mittelfinger]
+            // Wenn Klasse 3 korrekt aber fälschlicherweise als Klasse 2 oder 1 erkannt
+            // Dies ist ein False Positive für Geste 3 [Schere]
             False_Negatives_Class_3 += 1;
-        }
-
-        /********************************************************
-          Auswertungen von Klasse 4 (Alle Finger)
-        ********************************************************/
-        if ((index == 4) && (tf.classification == 4))
-        {
-            // Wenn Klasse 4 richtigerweise als Klasse 4 erkannt wurde
-            // Dies ist ein True Positive für Klasse 4 [Alle Finger]
-            True_Positives_Class_4 += 1;
-        }
-
-        if (((index == 1) && (tf.classification == 1)) || ((index == 2) && (tf.classification == 2)) || ((index == 3) && (tf.classification == 3)))
-        {
-            // Wenn Klasse 1 richtigerweise als Klasse 1 erkannt wurde oder
-            // Klasse 2 richtigerweise als Klasse 2 erkannt wurde oder
-            // Klasse 3 richtigerweise als Klasse 3 erkannt wurde
-            // Dies ist ein True Negative für Klasse 4 [Zeige- und Mittelfinger]
-            True_Negatives_Class_4 += 1;
-        }
-
-        if (((index == 1) || (index == 2) || (index == 3)) && (tf.classification == 4))
-        {
-            // Wenn Klasse 1,2 oder 3 fälschlicherweise als Klasse 4 erkannt wurden
-            // Dies ist ein False Positive für Geste 4 [Zeige- und Mittelfinger]
-            False_Positives_Class_4 += 1;
-        }
-
-        if ((index == 4) && ((tf.classification == 1) || (tf.classification == 2) || (tf.classification == 3)))
-        {
-            // Wenn Klasse 4 korrekt aber fälschlicherweise als Klasse 1, 2 oder 3 erkannt
-            // Dies ist ein False Positive für Geste 4 [Zeige- und Mittelfinger]
-            False_Negatives_Class_4 += 1;
         }
 
         if (DEBUG_EVALUATION)
@@ -494,13 +401,6 @@ void runValidationConfusionMatrix(int rows)
     Serial.println();
     Serial.println("-------------------------------------------------------------");
     Serial.println();
-    Serial.println("True Positives von Geste 4 : " + String(True_Positives_Class_4));
-    Serial.println("False Positives von Geste 4 : " + String(False_Positives_Class_4));
-    Serial.println("True Negatives von Geste 4 : " + String(True_Negatives_Class_4));
-    Serial.println("False Negatives von Geste 4 : " + String(False_Negatives_Class_4));
-    Serial.println();
-    Serial.println("-------------------------------------------------------------");
-    Serial.println();
 
     /********************************************************
         Precision und Recall gemäß Micro-Averaging
@@ -508,28 +408,25 @@ void runValidationConfusionMatrix(int rows)
     float Precision_1 = ((True_Positives_Class_1 / 1.0f) / (True_Positives_Class_1 + False_Positives_Class_1 / 1.0f));
     float Precision_2 = ((True_Positives_Class_2 / 1.0f) / (True_Positives_Class_2 + False_Positives_Class_2 / 1.0f));
     float Precision_3 = ((True_Positives_Class_3 / 1.0f) / (True_Positives_Class_3 + False_Positives_Class_3 / 1.0f));
-    float Precision_4 = ((True_Positives_Class_4 / 1.0f) / (True_Positives_Class_4 + False_Positives_Class_4 / 1.0f));
-
+    
     float Recall_1 = ((True_Positives_Class_1 / 1.0f) / (True_Positives_Class_1 + False_Negatives_Class_1 / 1.0f));
     float Recall_2 = ((True_Positives_Class_2 / 1.0f) / (True_Positives_Class_2 + False_Negatives_Class_2 / 1.0f));
     float Recall_3 = ((True_Positives_Class_3 / 1.0f) / (True_Positives_Class_3 + False_Negatives_Class_3 / 1.0f));
-    float Recall_4 = ((True_Positives_Class_4 / 1.0f) / (True_Positives_Class_4 + False_Negatives_Class_4 / 1.0f));
-
-    float Prec_Oben = (True_Positives_Class_1 + True_Positives_Class_2 + True_Positives_Class_3 + True_Positives_Class_4) / 1.0f;
-    float Prec_Unten = (True_Positives_Class_1 + False_Positives_Class_1 + True_Positives_Class_2 + False_Positives_Class_2 + True_Positives_Class_3 + False_Positives_Class_3 + True_Positives_Class_4 + False_Positives_Class_4) / 1.0f;
+    
+    float Prec_Oben = (True_Positives_Class_1 + True_Positives_Class_2 + True_Positives_Class_3) / 1.0f;
+    float Prec_Unten = (True_Positives_Class_1 + False_Positives_Class_1 + True_Positives_Class_2 + False_Positives_Class_2 + True_Positives_Class_3 + False_Positives_Class_3) / 1.0f;
     float Micro_Precision = Prec_Oben / Prec_Unten;
 
-    float Recall_Unten = (True_Positives_Class_1 + False_Negatives_Class_1 + True_Positives_Class_2 + False_Negatives_Class_2 + True_Positives_Class_3 + False_Negatives_Class_3 + True_Positives_Class_4 + False_Negatives_Class_4) / 1.0f;
+    float Recall_Unten = (True_Positives_Class_1 + False_Negatives_Class_1 + True_Positives_Class_2 + False_Negatives_Class_2 + True_Positives_Class_3 + False_Negatives_Class_3) / 1.0f;
     float Micro_Recall = Prec_Oben / Recall_Unten;
 
-    float Macro_Precision = (Precision_1 + Precision_2 + Precision_3 + Precision_4 / 1.0f) / 4;
-    float Macro_Recall = (Recall_1 + Recall_2 + Recall_3 + Recall_4 / 1.0f) / 4;
+    float Macro_Precision = (Precision_1 + Precision_2 + Precision_3 / 1.0f) / 3;
+    float Macro_Recall = (Recall_1 + Recall_2 + Recall_3 / 1.0f) / 3;
 
     float f1_score_1 = 2 * ((Precision_1 * Recall_1) / (Precision_1 + Recall_1));
     float f1_score_2 = 2 * ((Precision_2 * Recall_2) / (Precision_2 + Recall_2));
     float f1_score_3 = 2 * ((Precision_3 * Recall_3) / (Precision_3 + Recall_3));
-    float f1_score_4 = 2 * ((Precision_4 * Recall_4) / (Precision_4 + Recall_4));
-
+    
     float Macro_f1_score = 2 * ((Macro_Precision * Macro_Recall) / (Macro_Precision + Macro_Recall));
     float Micro_f1_score = 2 * ((Micro_Precision * Micro_Recall) / (Micro_Precision + Micro_Recall));
 
@@ -538,7 +435,6 @@ void runValidationConfusionMatrix(int rows)
     Serial.println("Klasse 1\t" + String(Precision_1) + "\t\t" + String(Recall_1) + "\t\t" + String(f1_score_1));
     Serial.println("Klasse 2\t" + String(Precision_2) + "\t\t" + String(Recall_2) + "\t\t" + String(f1_score_2));
     Serial.println("Klasse 3\t" + String(Precision_3) + "\t\t" + String(Recall_3) + "\t\t" + String(f1_score_3));
-    Serial.println("Klasse 4\t" + String(Precision_4) + "\t\t" + String(Recall_4) + "\t\t" + String(f1_score_4));
     Serial.println();
     Serial.println("-------------------------------------------------------------");
     Serial.println();

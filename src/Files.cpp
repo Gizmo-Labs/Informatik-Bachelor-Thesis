@@ -92,15 +92,14 @@ void readTestLabels()
 {
     sendStatusText("Lade Test-Label Datensätze! Dauer max. 1 Minute!");
 
-    CSV_Parser cp(/*format*/ "dddd", /*has_header*/ false);
+    CSV_Parser cp(/*format*/ "ddd", /*has_header*/ false);
 
     file = FFat.open("/y_test.csv", "r");
 
     uint16_t *label_0 = (uint16_t *)cp[0];
     uint16_t *label_1 = (uint16_t *)cp[1];
     uint16_t *label_2 = (uint16_t *)cp[2];
-    uint16_t *label_3 = (uint16_t *)cp[3];
-
+    
     int row_index = 0;
 
     uint32_t start = millis();
@@ -110,8 +109,7 @@ void readTestLabels()
         model_data_t->iTest_Label[row_index][0] = label_0[0];
         model_data_t->iTest_Label[row_index][1] = label_1[0];
         model_data_t->iTest_Label[row_index][2] = label_2[0];
-        model_data_t->iTest_Label[row_index][3] = label_3[0];
-
+        
         row_index++;
     }
 
@@ -136,7 +134,7 @@ void readTestLabels()
         delay(2000);
         for (int j = 0; j < 20; j++)
         {
-            Serial.println("Reihe : " + String(j + 1) + " | " + String(model_data_t->iTest_Label[j][0]) + " | " + String(model_data_t->iTest_Label[j][1]) + " | " + String(model_data_t->iTest_Label[j][2]) + " | " + String(model_data_t->iTest_Label[j][3]));
+            Serial.println("Reihe : " + String(j + 1) + " | " + String(model_data_t->iTest_Label[j][0]) + " | " + String(model_data_t->iTest_Label[j][1]) + " | " + String(model_data_t->iTest_Label[j][2]));
         }
     }
 }
@@ -149,15 +147,14 @@ void readValidationLabels()
 {
     sendStatusText("Lade Validation-Label Datensätze! Dauer max. 1 Minute!");
 
-    CSV_Parser cp(/*format*/ "dddd", /*has_header*/ false);
+    CSV_Parser cp(/*format*/ "ddd", /*has_header*/ false);
 
     file = FFat.open("/y_val.csv", "r");
 
     uint16_t *label_0 = (uint16_t *)cp[0];
     uint16_t *label_1 = (uint16_t *)cp[1];
     uint16_t *label_2 = (uint16_t *)cp[2];
-    uint16_t *label_3 = (uint16_t *)cp[3];
-
+    
     int row_index = 0;
 
     uint32_t start = millis();
@@ -167,8 +164,7 @@ void readValidationLabels()
         model_data_t->iValidation_Label[row_index][0] = label_0[0];
         model_data_t->iValidation_Label[row_index][1] = label_1[0];
         model_data_t->iValidation_Label[row_index][2] = label_2[0];
-        model_data_t->iValidation_Label[row_index][3] = label_3[0];
-
+        
         row_index++;
     }
 
@@ -193,7 +189,7 @@ void readValidationLabels()
         delay(2000);
         for (int j = 0; j < 20; j++)
         {
-            Serial.println("Reihe : " + String(j + 1) + " | " + String(model_data_t->iValidation_Label[j][0]) + " | " + String(model_data_t->iValidation_Label[j][1]) + " | " + String(model_data_t->iValidation_Label[j][2]) + " | " + String(model_data_t->iValidation_Label[j][3]));
+            Serial.println("Reihe : " + String(j + 1) + " | " + String(model_data_t->iValidation_Label[j][0]) + " | " + String(model_data_t->iValidation_Label[j][1]) + " | " + String(model_data_t->iValidation_Label[j][2]));
         }
     }
 }

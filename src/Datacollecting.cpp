@@ -185,7 +185,6 @@ void classify_emg_sample(int8_t *sample, size_t len)
         {
           for (int j = 0; j < 64; j++)
           {
-
             Serial.print(data_collecting_t->fBluetoothData[j]);
             // Letzter Datensatz benötigt kein Komma mehr
             if (j < 63)
@@ -209,8 +208,7 @@ void classify_emg_sample(int8_t *sample, size_t len)
   default:
     sendSomewhat(PREFIX_DATA + "_Start_Collecting", Data_Topic, "false");
     evaluation_data_t->flag_start_classifying = false;
-    evaluation_data_t->flag_classifying_light = false;
-    data_collecting_t->flag_green_light = false;
+    evaluation_data_t->flag_classifying_light = false;    
     ITimer1.stopTimer();
     break;
   }

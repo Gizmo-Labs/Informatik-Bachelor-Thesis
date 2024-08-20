@@ -15,7 +15,7 @@ MODEL_DATA *model_data_t = (MODEL_DATA *)heap_caps_malloc(sizeof(MODEL_DATA), MA
 EVALUATION_DATA *evaluation_data_t = (EVALUATION_DATA *)heap_caps_malloc(sizeof(EVALUATION_DATA), MALLOC_CAP_SPIRAM);
 
 extern TINYML_DATA *data_collecting_t;
-int classes[10] = {};
+
 
 /********************************************************
     Ausgabe der Konfusions-Matrix für Testdaten
@@ -443,49 +443,4 @@ void runValidationConfusionMatrix(int rows)
     Serial.println("Macro-Average\t" + String(Macro_Precision) + "\t\t" + String(Macro_Recall) + "\t\t" + String(Macro_f1_score));
 }
 
-void runClassifier()
-{
-    // Checke ob Vorhersage korrekt ausgeführt wurde
-    if (!tf.predict(data_collecting_t->fBluetoothData).isOk())
-    {
-        sendSomewhat(PREFIX_EVAL + "_Result_Classifier", Evaluation_Topic, "4");
-        Serial.println(tf.exception.toString());
-        delay(1000);
-        return;
-    }
 
-    if (data_collecting_t->iCount_Classifications < 10)
-    {
-        classes[data_collecting_t->iCount_Classifications] = tf.classification;
-        data_collecting_t->iCount_Classifications++;
-    }
-
-    if (data_collecting_t->iCount_Classifications == 10)
-    {
-        size_t i, j, count;
-        size_t most = 0;
-        int temp, elem;
-
-        for (i = 0; i < 10; i++)
-        {
-            temp = classes[i];
-            count = 1;
-            for (j = i + 1; j < 10; j++)
-            {
-                if (classes[j] == temp)
-                {
-                    count++;
-                }
-            }
-            if (most < count)
-            {
-                most = count;
-                elem = classes[i];
-            }
-        }
-
-        sendSomewhat(PREFIX_EVAL + "_Result_Classifier", Evaluation_Topic, String(elem));
-        // Serial.println("Geste : " + String(elem));
-        data_collecting_t->iCount_Classifications = 0;
-    }
-}

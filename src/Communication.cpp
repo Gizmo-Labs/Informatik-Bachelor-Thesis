@@ -17,11 +17,11 @@ extern "C"
 ********************************************************/
 const char *host = "Embedded-AI";
 
-// MQTT-Topics 
-const char *General_Topic = "TinyML/General";
-const char *Memory_Topic = "TinyML/Memory";
+// MQTT-Topics
 const char *Data_Topic = "TinyML/DataCollect";
 const char *Evaluation_Topic = "TinyML/Evaluation";
+const char *General_Topic = "TinyML/General";
+const char *Memory_Topic = "TinyML/Memory";
 const char *Myo_Topic = "TinyML/ControlMyo";
 
 const char *cLabel = "";
@@ -37,7 +37,6 @@ SpiRamAllocator allocator;
 MYO_DATA *myo_control_t = (MYO_DATA *)heap_caps_malloc(sizeof(MYO_DATA), MALLOC_CAP_SPIRAM);
 extern TINYML_DATA *data_collecting_t;
 extern EVALUATION_DATA *evaluation_data_t;
-
 
 /********************************************************
   MQTT-Handler
@@ -367,22 +366,22 @@ void onMqttMessage(char *topic, char *payload, const AsyncMqttClientMessagePrope
     // Lese Button Speicher aufzeichnen aus UI
     String sMonitorInternal = doc[PREFIX_MYO + "_Monitor_IntRAM"];
     if (sMonitorInternal.indexOf("true") >= 0)
-    {      
+    {
       myo_control_t->flag_monitor_internal = true;
     }
     else
-    {     
+    {
       myo_control_t->flag_monitor_internal = false;
     }
 
     // Lese Button EMG-Signal aufzeichnen aus UI
     String sMonitorExternal = doc[PREFIX_MYO + "_Monitor_ExtRAM"];
     if (sMonitorExternal.indexOf("true") >= 0)
-    {     
+    {
       myo_control_t->flag_monitor_external = true;
     }
     else
-    {     
+    {
       myo_control_t->flag_monitor_external = false;
     }
   }
@@ -393,53 +392,64 @@ void onMqttMessage(char *topic, char *payload, const AsyncMqttClientMessagePrope
     // Lese Button "Lade Testdaten" aus UI
     String sLoadTestData = doc[PREFIX_EVAL + "_Load_Testdata"];
     if (sLoadTestData.indexOf("true") >= 0)
-    {      
-      evaluation_data_t->flag_load_testdata = true;    
-      evaluation_data_t->flag_loaded_testdata = false;    
+    {
+      evaluation_data_t->flag_load_testdata = true;
+      evaluation_data_t->flag_loaded_testdata = false;
       sendSomewhat(PREFIX_EVAL + "_Load_Testdata", Evaluation_Topic, "false");
-      sendSomewhat(PREFIX_EVAL + "_State_Testdata", Evaluation_Topic, "0");  
+      sendSomewhat(PREFIX_EVAL + "_State_Testdata", Evaluation_Topic, "0");
     }
     else
     {
       evaluation_data_t->flag_load_testdata = false;
     }
 
-  // Lese Button "Lade Validierungsdaten" aus UI
+    // Lese Button "Lade Validierungsdaten" aus UI
     String sLoadValidationData = doc[PREFIX_EVAL + "_Load_Valdata"];
     if (sLoadValidationData.indexOf("true") >= 0)
-    {      
-      evaluation_data_t->flag_load_validationdata = true;    
-      evaluation_data_t->flag_loaded_validationdata = false;    
+    {
+      evaluation_data_t->flag_load_validationdata = true;
+      evaluation_data_t->flag_loaded_validationdata = false;
       sendSomewhat(PREFIX_EVAL + "_Load_Valdata", Evaluation_Topic, "false");
-      sendSomewhat(PREFIX_EVAL + "_State_Valdata", Evaluation_Topic, "0");  
+      sendSomewhat(PREFIX_EVAL + "_State_Valdata", Evaluation_Topic, "0");
     }
     else
     {
       evaluation_data_t->flag_load_validationdata = false;
-    }  
+    }
 
-   // Lese Button "Starte Evaluierung" aus UI
-    String sStartEvaluation = doc[PREFIX_EVAL + "_Start_Evaluation"];
-    if (sStartEvaluation.indexOf("true") >= 0)
-    {      
-      evaluation_data_t->flag_start_evaluation = true;    
+    // Lese Button "Starte Evaluierung" aus UI
+    String sStartEvaluationTest = doc[PREFIX_EVAL + "_Start_Evaluation_Test"];
+    if (sStartEvaluationTest.indexOf("true") >= 0)
+    {
+      evaluation_data_t->flag_start_evaluation_test = true;
     }
     else
     {
-      evaluation_data_t->flag_start_evaluation = false;
+      evaluation_data_t->flag_start_evaluation_test = false;
+    }
+
+    // Lese Button "Starte Evaluierung" aus UI
+    String sStartEvaluationValidation = doc[PREFIX_EVAL + "_Start_Evaluation_Validation"];
+    if (sStartEvaluationValidation.indexOf("true") >= 0)
+    {
+      evaluation_data_t->flag_start_evaluation_validation = true;
+    }
+    else
+    {
+      evaluation_data_t->flag_start_evaluation_validation = false;
     }
 
     // Lese Button "Starte Klassifizierung" aus UI
     String sStartClassifying = doc[PREFIX_EVAL + "_Start_Classifying"];
     if (sStartClassifying.indexOf("true") >= 0)
-    {      
-      evaluation_data_t->flag_start_classifying = true;    
+    {
+      evaluation_data_t->flag_start_classifying = true;
       evaluation_data_t->flag_classifying_light = true;
     }
     else
     {
       evaluation_data_t->flag_start_classifying = false;
-    }     
+    }
   }
 }
 
@@ -595,14 +605,14 @@ void sendStatusData()
 {
   JsonDocument status(&allocator);
   String message;
- 
+
   // Anzahl der Zeilen mit jeweils 64 Einzelwerten
   status[PREFIX_DATA + "_Gesture_DataPackets"] = data_collecting_t->iDatapoints[data_collecting_t->iLabel];
-  
+
   // Anzahl der Einzelwerte insgesamt --> Anzahl der Zeilen x 64
   status[PREFIX_DATA + "_Gesture_DataPoints"] = data_collecting_t->iDatapoints[data_collecting_t->iLabel] * 64;
-  
-  // 
+
+  //
   status[PREFIX_DATA + "_Total_DataPackets"] = data_collecting_t->iDatapoints[data_collecting_t->iLabel] * data_collecting_t->iRepetitions_done;
   status[PREFIX_DATA + "_Total_DataPoints"] = data_collecting_t->iDatapoints[data_collecting_t->iLabel] * data_collecting_t->iRepetitions_done * 64;
   status[PREFIX_DATA + "_TotalSize"] = (data_collecting_t->iDatapoints[data_collecting_t->iLabel] * 64 * 8) / 1024;

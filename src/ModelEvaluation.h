@@ -12,7 +12,6 @@ void runTestConfusionMatrix(int rows);
 void runValidationConfusionMatrix(int rows);
 void runClassifier();
 
-
 /********************************************************
   Globale Konstanten
 ********************************************************/
@@ -29,8 +28,8 @@ void runClassifier();
 typedef struct
 {
   float fTest_Data[ROWS_OF_TESTDATA][FEATURES];
-  int iTest_Label[ROWS_OF_TESTDATA][NUM_OF_CLASSES];
   float fValidation_Data[ROWS_OF_VALIDATIONDATA][FEATURES];
+  int iTest_Label[ROWS_OF_TESTDATA][NUM_OF_CLASSES];
   int iValidation_Label[ROWS_OF_VALIDATIONDATA][NUM_OF_CLASSES];
 } MODEL_DATA;
 
@@ -41,7 +40,8 @@ typedef struct
 {
   volatile bool flag_start_classifying;
   volatile bool flag_classifying_light;
-  volatile bool flag_start_evaluation;
+  volatile bool flag_start_evaluation_test;
+  volatile bool flag_start_evaluation_validation;
   volatile bool flag_load_testdata;
   volatile bool flag_load_validationdata;  
   volatile bool flag_loaded_testdata;

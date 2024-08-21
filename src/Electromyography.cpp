@@ -137,21 +137,39 @@ void loop()
   }
 
   /********************************************************
-      Führe Evaluierung aus
+      Führe Evaluierung mit Testdaten aus
   ********************************************************/
-  if ((evaluation_data_t->flag_start_evaluation == true) && ((evaluation_data_t->flag_loaded_testdata == true) || (evaluation_data_t->flag_loaded_validationdata == true)))
+  if ((evaluation_data_t->flag_start_evaluation_test == true) && ((evaluation_data_t->flag_loaded_testdata == true)))
   {
-    evaluation_data_t->flag_start_evaluation = false;
-    runValidationConfusionMatrix(ROWS_OF_VALIDATIONDATA);
-    sendSomewhat(PREFIX_EVAL + "_Start_Evaluation", Evaluation_Topic, "false");
+    evaluation_data_t->flag_start_evaluation_test = false;
+    runTestConfusionMatrix(ROWS_OF_TESTDATA);
+    sendSomewhat(PREFIX_EVAL + "_Start_Evaluation_Test", Evaluation_Topic, "false");
   }
 
-  if ((evaluation_data_t->flag_start_evaluation == true) && (evaluation_data_t->flag_loaded_testdata == false) && (evaluation_data_t->flag_loaded_validationdata == false))
+  if ((evaluation_data_t->flag_start_evaluation_test == true) && (evaluation_data_t->flag_loaded_testdata == false))
   {
-    evaluation_data_t->flag_start_evaluation = false;
-    sendStatusText("Evaluierung nicht möglich! Keine Daten geladen!");
+    evaluation_data_t->flag_start_evaluation_test = false;
+    sendStatusText("Evaluierung mit Testdaten nicht möglich! Keine Daten geladen!");
     delay(5000);
-    sendSomewhat(PREFIX_EVAL + "_Start_Evaluation", Evaluation_Topic, "false");
+    sendSomewhat(PREFIX_EVAL + "_Start_Evaluation_Test", Evaluation_Topic, "false");
+  }
+
+  /********************************************************
+        Führe Evaluierung mit Validierungsdaten aus
+    ********************************************************/
+  if ((evaluation_data_t->flag_start_evaluation_validation == true) && ((evaluation_data_t->flag_loaded_validationdata == true)))
+  {
+    evaluation_data_t->flag_start_evaluation_validation = false;
+    runValidationConfusionMatrix(ROWS_OF_VALIDATIONDATA);
+    sendSomewhat(PREFIX_EVAL + "_Start_Evaluation_Validation", Evaluation_Topic, "false");
+  }
+
+  if ((evaluation_data_t->flag_start_evaluation_validation == true) && (evaluation_data_t->flag_loaded_validationdata == false))
+  {
+    evaluation_data_t->flag_start_evaluation_validation = false;
+    sendStatusText("Evaluierung mit Validierungsdaten nicht möglich! Keine Daten geladen!");
+    delay(5000);
+    sendSomewhat(PREFIX_EVAL + "_Start_Evaluation_Validation", Evaluation_Topic, "false");
   }
 
   /********************************************************
@@ -230,8 +248,7 @@ void loop()
   /********************************************************
     Armband ist verbunden und kein Data-Collecting
   ********************************************************/
-  if ((myo.connected == true) && (data_collecting_t->flag_traffic_light == false) 
-  && (evaluation_data_t->flag_classifying_light == false) && (evaluation_data_t->flag_start_classifying == false))
+  if ((myo.connected == true) && (data_collecting_t->flag_traffic_light == false) && (evaluation_data_t->flag_classifying_light == false) && (evaluation_data_t->flag_start_classifying == false))
   {
     setNeoColor(0, 0, 255); // Blau
   }

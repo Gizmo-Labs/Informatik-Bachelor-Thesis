@@ -6,19 +6,17 @@
 #include <ArduinoJson.h>
 #include "esp_heap_caps.h"
 
-
 /********************************************************
   Funktions-Prototypen WiFi
 ********************************************************/
 void WiFiStart();
 void connectToWifi();
 
-
 /********************************************************
   Funktions-Prototypen Kommunikation
 ********************************************************/
 void initMqtt();
-void publishMqtt(const char* topic, String payload);
+void publishMqtt(const char *topic, String payload);
 void sendStatusText(String payload);
 void sendSomewhat(String prefix, const char *topic, String payload);
 void sendStatusMemory();
@@ -28,12 +26,10 @@ void sendStatusData();
 void printStatusInternalRAM();
 void printStatusExternalRAM();
 
-
 /********************************************************
   Funktions-Prototypen Allgemein
 ********************************************************/
 String ConvertResetReasonToString(esp_reset_reason_t reason);
-
 
 /********************************************************
   Globale Konstanten Kommunikation
@@ -48,35 +44,29 @@ static const String PREFIX_EVAL = "TinyML_Evaluation";
 static const String PREFIX_MEMORY = "TinyML_Memory";
 static const String PREFIX_GENERAL = "TinyML_General";
 
-
 /********************************************************
   Deklaration Globale Variablen Kommunikation
 ********************************************************/
 extern String IP;
-extern const char* host;
+extern const char *host;
 
 // Subscribe Topics
-extern const char *Classify_Topic;
 extern const char *Data_Topic;
 extern const char *Evaluation_Topic;
 extern const char *General_Topic;
-extern const char *Train_Topic;
-extern const char *Metrics_Topic;
 extern const char *Memory_Topic;
 extern const char *Myo_Topic;
-
 
 /********************************************************
   Deklaration Struct Myo-Armband + Bluetooth
 ********************************************************/
 typedef struct
 {
-    volatile bool flag_connect_bluetooth;          
-    volatile bool flag_myo_connected;
-    volatile bool flag_monitor_external;
-    volatile bool flag_monitor_internal;    
+  volatile bool flag_connect_bluetooth;
+  volatile bool flag_myo_connected;
+  volatile bool flag_monitor_external;
+  volatile bool flag_monitor_internal;
 } MYO_DATA;
-
 
 /********************************************************
   Memory Allocator für Arduino JSON auf externem PSRAM
@@ -94,7 +84,7 @@ struct SpiRamAllocator : ArduinoJson::Allocator
   }
 
   void *reallocate(void *ptr, size_t new_size) override
-{
+  {
     return heap_caps_realloc(ptr, new_size, MALLOC_CAP_SPIRAM);
   }
 };

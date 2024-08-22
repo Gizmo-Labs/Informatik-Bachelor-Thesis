@@ -3,10 +3,12 @@
 ********************************************************/
 #include "Prototypes.h"
 
+
 /********************************************************
   EloquentTinyML Instanz
 ********************************************************/
 Eloquent::TF::Sequential<TF_NUM_OPS, ARENA_SIZE> tf;
+
 
 /********************************************************
   Array für Training-Labels auf PSRAM allokieren
@@ -14,11 +16,15 @@ Eloquent::TF::Sequential<TF_NUM_OPS, ARENA_SIZE> tf;
 MODEL_DATA *model_data_t = (MODEL_DATA *)heap_caps_malloc(sizeof(MODEL_DATA), MALLOC_CAP_SPIRAM);
 EVALUATION_DATA *evaluation_data_t = (EVALUATION_DATA *)heap_caps_malloc(sizeof(EVALUATION_DATA), MALLOC_CAP_SPIRAM);
 
+
+/********************************************************
+  Extern deklarierte Instanzen
+********************************************************/
 extern TINYML_DATA *data_collecting_t;
 
 
 /********************************************************
-    Ausgabe der Konfusions-Matrix für Testdaten
+  Ausgabe der Konfusions-Matrix für Testdaten
 ********************************************************/
 void runTestConfusionMatrix(int rows)
 {
@@ -230,8 +236,9 @@ void runTestConfusionMatrix(int rows)
     Serial.println("Macro-Average\t" + String(Macro_Precision) + "\t\t" + String(Macro_Recall) + "\t\t" + String(Macro_f1_score));
 }
 
+
 /********************************************************
-    Ausgabe der Konfusions-Matrix für Validierungsdaten
+  Ausgabe der Konfusions-Matrix für Validierungsdaten
 ********************************************************/
 void runValidationConfusionMatrix(int rows)
 {

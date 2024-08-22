@@ -5,10 +5,6 @@
 #include "ESP32TimerInterrupt.h"
 #include "ESP32_ISR_Timer.h"
 
-/********************************************************
-  Myo-Armband Instanz
-********************************************************/
-armband myo;
 
 /********************************************************
   Extern deklarierte Instanzen
@@ -16,35 +12,52 @@ armband myo;
 extern u_int8_t ICounter1;
 extern MYO_DATA *myo_control_t;
 extern TINYML_DATA *data_collecting_t;
-
 extern MODEL_DATA *model_data_t;
 extern EVALUATION_DATA *evaluation_data_t;
-
-/********************************************************
-  Definition Globale Variablen
-********************************************************/
 extern Eloquent::TF::Sequential<TF_NUM_OPS, ARENA_SIZE> tf;
 
+
+/********************************************************
+  Lokal deklarierte Instanzen
+********************************************************/
+armband myo;
+
+
+/********************************************************
+  Initialisierung Myo-Armband
+********************************************************/
 void initMyo()
 {
   if (DEBUG_ELECTROMYOGRAPHY)
+  {
     Serial.println("Inside initMyo");
+    myo.debug = true;
+  }
+  else
+  {
+    myo.debug = false;
+  }
 
-  // Debugging für Bluetooth-Stack true/false
-  myo.debug = false;
-
+  // Verbinde mit Armband
   myo.connect();
 
+  // Setze Betriebsarten
   myo.set_myo_mode(myohw_emg_mode_send_emg,         // EMG mode ON
                    myohw_imu_mode_none,             // IMU mode OFF
                    myohw_classifier_mode_disabled); // Classifier mode OFF
 
+  // Aktiviere Callback
   myo.emg_notification(TURN_ON)->subscribe(true, emgCallback);
   myo.set_sleep_mode(1);
 
+  // Setze Tastenanforderung zurück
   myo_control_t->flag_connect_bluetooth = false;
 }
 
+
+/********************************************************
+  Arduino Setup
+********************************************************/
 void setup()
 {
   /********************************************************
@@ -66,12 +79,12 @@ void setup()
   evaluation_data_t = new EVALUATION_DATA();
 
   /********************************************************
-     RGB-LED initialisieren
+    RGB-LED initialisieren
   ********************************************************/
   initNeo();
 
   /********************************************************
-     MQTT initialisieren
+    MQTT initialisieren
   ********************************************************/
   initMqtt();
 
@@ -85,17 +98,25 @@ void setup()
     Serial.println("Dateisystem erfolgreich erstellt!");
   }
 
-  // configure input/output
+  /********************************************************
+    Ein-/Ausgänge Machine Learning Modell konfigurieren
+  ********************************************************/
   tf.setNumInputs(TF_NUM_INPUTS);
   tf.setNumOutputs(TF_NUM_OUTPUTS);
 
-  // // this is defined in model.h
+  /********************************************************
+    Tensorflow Layer aus Model.h einlesen
+  ********************************************************/
   registerNetworkOps(tf);
 
   while (!tf.begin(tfModel).isOk())
     Serial.println(tf.exception.toString());
 }
 
+
+/********************************************************
+  Arduino Loop
+********************************************************/
 void loop()
 {
   /********************************************************

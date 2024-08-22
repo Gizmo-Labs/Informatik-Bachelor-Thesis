@@ -12,6 +12,7 @@ extern "C"
 #include <AsyncMQTT_ESP32.h>
 #include <WebServer.h>
 
+
 /********************************************************
   Definition Globale Variablen Kommunikation
 ********************************************************/
@@ -38,12 +39,14 @@ MYO_DATA *myo_control_t = (MYO_DATA *)heap_caps_malloc(sizeof(MYO_DATA), MALLOC_
 extern TINYML_DATA *data_collecting_t;
 extern EVALUATION_DATA *evaluation_data_t;
 
+
 /********************************************************
   MQTT-Handler
 ********************************************************/
 AsyncMqttClient mqttClient;
 TimerHandle_t mqttReconnectTimer;
 TimerHandle_t wifiReconnectTimer;
+
 
 /********************************************************
   Starte WiFi-Verbindung
@@ -74,6 +77,7 @@ void WiFiStart()
   Serial.println("MAC-ADDRESSE: " + WiFi.macAddress());
   /*****************************************************/
 }
+
 
 /********************************************************
   Starte WiFi-Verbindung [Kurzform]
@@ -134,6 +138,7 @@ String ConvertResetReasonToString(esp_reset_reason_t reason)
   }
 }
 
+
 /********************************************************
   Starte Mqtt-Verbindung
 ********************************************************/
@@ -143,6 +148,7 @@ void connectToMqtt()
     Serial.println("Verbinde mit MQTT-Broker...");
   mqttClient.connect();
 }
+
 
 /********************************************************
   WiFi-Eventhandling
@@ -161,6 +167,7 @@ void WiFiEvent(WiFiEvent_t event)
   }
 }
 
+
 /********************************************************
   Trennlinie auf serieller Schnittstelle
 ********************************************************/
@@ -169,6 +176,7 @@ void printSeparationLine()
   if (DEBUG_COMMUNICATION)
     Serial.println("************************************************");
 }
+
 
 /********************************************************
   Event für MQTT-Verbindung erfolgreich aufgebaut
@@ -245,6 +253,7 @@ void onMqttConnect(bool sessionPresent)
   sendSomewhat(PREFIX_MEMORY, Memory_Topic, "Topic TinyML_Memory ist bereit!");
 }
 
+
 /********************************************************
   Event für MQTT-Verbindung getrennt
 ********************************************************/
@@ -261,6 +270,7 @@ void onMqttDisconnect(AsyncMqttClientDisconnectReason reason)
   }
 }
 
+
 /********************************************************
   Event für MQTT-Subscribe
 ********************************************************/
@@ -276,6 +286,7 @@ void onMqttSubscribe(const uint16_t &packetId, const uint8_t &qos)
   }
 }
 
+
 /********************************************************
   Event für MQTT-Unsubscribe
 ********************************************************/
@@ -288,6 +299,7 @@ void onMqttUnsubscribe(const uint16_t &packetId)
     Serial.println(packetId);
   }
 }
+
 
 /********************************************************
   Event für MQTT-Nachricht erhalten
@@ -453,6 +465,7 @@ void onMqttMessage(char *topic, char *payload, const AsyncMqttClientMessagePrope
   }
 }
 
+
 /********************************************************
   Event für MQTT-Publish erfolgt
 ********************************************************/
@@ -465,6 +478,7 @@ void onMqttPublish(const uint16_t &packetId)
     Serial.println(packetId);
   }
 }
+
 
 /********************************************************
   MQTT-Verbindung initialisieren
@@ -487,6 +501,7 @@ void initMqtt()
   mqttClient.setServer(MQTT_HOST, MQTT_PORT);
 }
 
+
 /********************************************************
   MQTT-Nachricht publishen
 ********************************************************/
@@ -494,6 +509,7 @@ void publishMqtt(const char *topic, String payload)
 {
   mqttClient.publish(topic, 0, true, payload.c_str());
 }
+
 
 /********************************************************
   Statusmeldung für GUI senden
@@ -509,6 +525,7 @@ void sendStatusText(String payload)
   publishMqtt(General_Topic, message);
 }
 
+
 /********************************************************
   Nachricht mit freiem Text senden
 ********************************************************/
@@ -521,6 +538,7 @@ void sendSomewhat(String prefix, const char *topic, String payload)
   serializeJsonPretty(status, message);
   publishMqtt(topic, message);
 }
+
 
 /********************************************************
   Status von Heap + PSRAM senden
@@ -545,6 +563,7 @@ void sendStatusMemory()
   publishMqtt(Memory_Topic, message);
 }
 
+
 /********************************************************
   Status von Internal RAM (HEAP) über serielle Schnittstelle senden
 ********************************************************/
@@ -554,6 +573,7 @@ void printStatusInternalRAM()
   Serial.println();
 }
 
+
 /********************************************************
   Status von External RAM (PSRAM) über serielle Schnittstelle senden
 ********************************************************/
@@ -562,6 +582,7 @@ void printStatusExternalRAM()
   Serial.print(ESP.getFreePsram());
   Serial.println();
 }
+
 
 /********************************************************
   Status von Chip senden
@@ -581,6 +602,7 @@ void sendStatusChip()
   publishMqtt(General_Topic, message);
 }
 
+
 /********************************************************
   Status von Myo-Armband senden
 ********************************************************/
@@ -597,6 +619,7 @@ void sendStatusMyo()
   serializeJsonPretty(status, message);
   publishMqtt(Myo_Topic, message);
 }
+
 
 /********************************************************
   Status von Data-Collecting senden

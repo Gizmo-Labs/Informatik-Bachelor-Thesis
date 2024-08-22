@@ -4,12 +4,14 @@
 #pragma once
 #include <stdint.h>
 
+
 /********************************************************
   Funktions-Prototypen Data-Collecting
 ********************************************************/
 void write_emg_sample(int8_t *sample, size_t len);
 void emgCallback(BLERemoteCharacteristic *pBLERemoteCharacteristic, uint8_t *pData, size_t length, bool isNotify);
 void setupISR();
+
 
 /********************************************************
   Globale Konstanten Data-Collecting
@@ -27,16 +29,19 @@ void setupISR();
 #define TIMER_INTERRUPT_DEBUG 2
 #define _TIMERINTERRUPT_LOGLEVEL_ 0
 
+
 /********************************************************
   Spezielle Bibliotheken
 ********************************************************/
 #include "ESP32TimerInterrupt.hpp"
 #include "ESP32_ISR_Timer.hpp"
 
+
 /********************************************************
   Deklaration ISR-Timer
 ********************************************************/
 extern ESP32_ISR_Timer ISR_Timer;
+
 
 /********************************************************
   Deklaration Struct Data-Collecting

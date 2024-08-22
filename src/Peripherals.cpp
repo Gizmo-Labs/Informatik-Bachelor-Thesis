@@ -11,14 +11,11 @@ Adafruit_NeoPixel pixels(NUMPIXELS, PIN, NEO_GRB + NEO_KHZ800);
 
 
 /********************************************************
-  Definition Globale Variablen
+  Extern deklarierte Instanzen
 ********************************************************/
-long previousStatus = 0;
-long previousMemory = 0;
-long previousIdle = 0;
-
 extern TINYML_DATA *data_collecting_t;
 extern EVALUATION_DATA *evaluation_data_t;
+
 
 /********************************************************
   Farbe von RGB-LED einstellen
@@ -62,8 +59,7 @@ void trafficLight()
   Blinken beim Klassifizieren
 ********************************************************/
 void classifyingLight()
-{
-  //evaluation_data_t->flag_classifying_light = true;
+{  
   sendStatusText("Klassifizierung aktiv!");  
   delay(PRE_CLASSIFYING_LIGHT);
   setNeoColor(255, 0, 255); // Magenta

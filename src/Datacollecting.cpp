@@ -3,18 +3,20 @@
 ********************************************************/
 #include "Prototypes.h"
 
+
 /********************************************************
   Definition Globale Variablen Data-Collecting
 ********************************************************/
 TINYML_DATA *data_collecting_t = (TINYML_DATA *)heap_caps_malloc(sizeof(TINYML_DATA), MALLOC_CAP_SPIRAM);
 enum STATE_TIMER0 state0;
 
+
 extern MODEL_DATA *model_data_t;
 extern EVALUATION_DATA *evaluation_data_t;
-
 extern armband myo;
 
 uint8_t count_samples = 0;
+
 
 /********************************************************
   Erstelle Interrupt-Timer (maximal 16)
@@ -25,10 +27,12 @@ ESP32Timer ITimer1(1);
 volatile u_int8_t ICounter = 0;
 volatile u_int8_t ICounter1 = 0;
 
+
 /********************************************************
   Erstelle Instanz für Hardware-Timer
 ********************************************************/
 ESP32_ISR_Timer ISR_Timer;
+
 
 /********************************************************
   Interrupt Handler für Interrupt-Timer 0
@@ -43,6 +47,7 @@ bool IRAM_ATTR TimerHandler0(void *timerNo)
   return true;
 }
 
+
 /********************************************************
   Interrupt Handler für Interrupt-Timer 1
 
@@ -56,6 +61,7 @@ bool IRAM_ATTR TimerHandler1(void *timerNo)
   ICounter1++;
   return true;
 }
+
 
 /********************************************************
   Initalisiere Interrupt-Timer
@@ -78,6 +84,7 @@ void setupISR()
   else if (DEBUG_DATA_COLLECTING)
     Serial.println(F("Can't set ITimer. Select another freq. or timer"));
 }
+
 
 /********************************************************
   Lese EMG-Rohdaten ein
@@ -143,6 +150,7 @@ void write_emg_sample(int8_t *sample, size_t len)
     break;
   }
 }
+
 
 /********************************************************
   Lese EMG-Rohdaten ein
@@ -213,6 +221,7 @@ void classify_emg_sample(int8_t *sample, size_t len)
     break;
   }
 }
+
 
 /********************************************************
   Callback-Funktion für EMG-Signale

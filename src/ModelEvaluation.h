@@ -5,12 +5,14 @@
 #include <tflm_esp32.h>
 #include <eloquent_tinyml.h>
 
+
 /********************************************************
   Funktions-Prototypen
 ********************************************************/
 void runTestConfusionMatrix(int rows);
 void runValidationConfusionMatrix(int rows);
 void runClassifier();
+
 
 /********************************************************
   Globale Konstanten
@@ -22,6 +24,7 @@ void runClassifier();
 #define NUM_OF_CLASSES 3
 #define FEATURES 64
 
+
 /********************************************************
   Deklaration Struct Test-Daten
 ********************************************************/
@@ -32,6 +35,7 @@ typedef struct
   int iTest_Label[ROWS_OF_TESTDATA][NUM_OF_CLASSES];
   int iValidation_Label[ROWS_OF_VALIDATIONDATA][NUM_OF_CLASSES];
 } MODEL_DATA;
+
 
 /********************************************************
   Deklaration Struct Evalution

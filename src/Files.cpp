@@ -3,11 +3,13 @@
 ********************************************************/
 #include "Prototypes.h"
 
+
 /********************************************************
   Extern deklarierte Instanzen
 ********************************************************/
 extern MODEL_DATA *model_data_t;
 extern EVALUATION_DATA *evaluation_data_t;
+
 
 /********************************************************
   Lokal deklarierte Instanzen
